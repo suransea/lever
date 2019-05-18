@@ -1,5 +1,7 @@
 ## Lever
 
+[![](https://jitpack.io/v/suransea/lever.svg)](https://jitpack.io/#suransea/lever)
+
 ##### Android 常用工具合集
 
 
