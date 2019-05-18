@@ -1,0 +1,32 @@
+ext {
+    //compile config
+    compileSdkVersion = 28
+    buildToolsVersion = "28.0.2"
+    minSdkVersion = 19
+    targetSdkVersion = 28
+
+    //版本号
+    versionCode = 1
+    versionName = "1.0"
+
+    //dependencies
+    androidJUnitRunner = "androidx.test.runner.AndroidJUnitRunner"
+    junit = 'junit:junit:4.12'
+    testRunner = 'androidx.test:runner:1.1.1'
+    espressoCore = 'androidx.test.espresso:espresso-core:3.1.1'
+
+    appcompat = 'androidx.appcompat:appcompat:+'
+    constraintLayout = 'androidx.constraintlayout:constraintlayout:+'
+    lifecycle = 'androidx.lifecycle:lifecycle-extensions:+'
+    material = 'com.google.android.material:material:+'
+
+    gson = 'com.google.code.gson:gson:2.8.5'
+    rxandroid = 'io.reactivex.rxjava2:rxandroid:2.1.1'
+    rxjava = "io.reactivex.rxjava2:rxjava:2.2.8"
+    retrofit = 'com.squareup.retrofit2:retrofit:2.5.0'
+    okhttp = 'com.squareup.okhttp3:okhttp:3.12.0'
+    picasso = 'com.squareup.picasso:picasso:2.71828'
+    eventBus = 'org.greenrobot:eventbus:3.1.1'
+    retrofitRxjavaAdapter = 'com.squareup.retrofit2:adapter-rxjava2:2.5.0'
+    retrofitGsonConverter = 'com.squareup.retrofit2:converter-gson:2.5.0'
+}
