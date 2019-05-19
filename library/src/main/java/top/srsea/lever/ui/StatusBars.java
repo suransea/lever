@@ -23,20 +23,40 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
-public class StatusBarManager {
+public class StatusBars {
+    private Window window;
+    private View decorView;
+
+    private StatusBars(Activity activity) {
+        window = activity.getWindow();
+        decorView = window.getDecorView();
+    }
+
+    public static StatusBars of(@NonNull Activity activity) {
+        return new StatusBars(activity);
+    }
+
+    /**
+     * 隐藏状态栏
+     */
+    public StatusBars hide() {
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+        return this;
+    }
 
     /**
      * 设置状态栏明暗
      *
-     * @param activity 目标活动
-     * @param dark     是否暗色
+     * @param dark 是否暗色
      */
-    public static void setBrightness(@Nullable Activity activity, boolean dark) {
-        if (activity == null) return;
-        Window window = activity.getWindow();
-        View decorView = window.getDecorView();
+    public StatusBars setBrightness(boolean dark) {
         int flag = decorView.getSystemUiVisibility();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (dark) {
@@ -53,17 +73,13 @@ public class StatusBarManager {
             }
         }
         decorView.setSystemUiVisibility(flag);
+        return this;
     }
 
     /**
      * 设置状态栏为全透明
-     *
-     * @param activity 目标活动
      */
-    public static void setFullTransparent(@Nullable Activity activity) {
-        if (activity == null) return;
-        Window window = activity.getWindow();
-        View decorView = window.getDecorView();
+    public StatusBars setFullTransparent() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             window.setNavigationBarColor(Color.TRANSPARENT);
         }
@@ -72,29 +88,13 @@ public class StatusBarManager {
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             window.setStatusBarColor(Color.TRANSPARENT);
-            return;
+            return this;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
-    }
-
-    /**
-     * 隐藏状态栏
-     *
-     * @param activity 目标活动
-     */
-    public static void hide(@Nullable Activity activity) {
-        if (activity == null) return;
-        Window window = activity.getWindow();
-        View decorView = window.getDecorView();
-        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+        return this;
     }
 
 }
