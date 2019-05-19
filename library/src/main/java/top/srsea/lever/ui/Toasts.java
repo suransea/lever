@@ -16,6 +16,7 @@
 
 package top.srsea.lever.ui;
 
+import android.os.Looper;
 import android.widget.Toast;
 
 import androidx.annotation.StringRes;
@@ -58,6 +59,12 @@ public class Toasts {
 
         public Toast build() {
             return Toast.makeText(Lever.getContext(), content, duration);
+        }
+
+        public Builder prepare() {
+            Looper.prepare();
+            Looper.loop();
+            return this;
         }
 
         private void show() {
