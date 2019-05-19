@@ -24,6 +24,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 public class StatusBars {
     private Window window;
@@ -41,13 +42,17 @@ public class StatusBars {
     /**
      * 隐藏状态栏
      */
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public StatusBars hide() {
-        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+        int flag = View.SYSTEM_UI_FLAG_LOW_PROFILE
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            flag |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        }
+        decorView.setSystemUiVisibility(flag);
         return this;
     }
 
@@ -56,6 +61,7 @@ public class StatusBars {
      *
      * @param dark 是否暗色
      */
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public StatusBars setBrightness(boolean dark) {
         int flag = decorView.getSystemUiVisibility();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -65,12 +71,10 @@ public class StatusBars {
                 flag &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
             }
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (dark) {
-                flag |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-            } else {
-                flag &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-            }
+        if (dark) {
+            flag |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        } else {
+            flag &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
         }
         decorView.setSystemUiVisibility(flag);
         return this;
@@ -79,6 +83,7 @@ public class StatusBars {
     /**
      * 设置状态栏为全透明
      */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public StatusBars setFullTransparent() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             window.setNavigationBarColor(Color.TRANSPARENT);
@@ -90,10 +95,8 @@ public class StatusBars {
             window.setStatusBarColor(Color.TRANSPARENT);
             return this;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        }
+        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         return this;
     }
 
