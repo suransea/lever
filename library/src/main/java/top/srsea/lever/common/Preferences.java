@@ -33,7 +33,7 @@ public class Preferences {
         return context.getSharedPreferences(name, Context.MODE_PRIVATE);
     }
 
-    public static SharedPreferences ofApp() {
+    public static SharedPreferences app() {
         return PreferenceManager.getDefaultSharedPreferences(Lever.getContext());
     }
 }

@@ -29,4 +29,5 @@ ext {
     eventBus = 'org.greenrobot:eventbus:3.1.1'
     retrofitRxjavaAdapter = 'com.squareup.retrofit2:adapter-rxjava2:2.5.0'
     retrofitGsonConverter = 'com.squareup.retrofit2:converter-gson:2.5.0'
+    zxing = 'com.google.zxing:core:3.4.0'
 }

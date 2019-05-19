@@ -24,7 +24,7 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 import top.srsea.lever.Lever;
 
-public class Clipboard {
+public class ClipboardUtils {
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     private static ClipboardManager getClipboardManager() {
@@ -33,13 +33,13 @@ public class Clipboard {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
-    public static void set(String content) {
+    public static void setContent(String content) {
         ClipboardManager manager = getClipboardManager();
         manager.setPrimaryClip(ClipData.newPlainText(null, content));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
-    public static String get() {
+    public static String getContent() {
         ClipboardManager manager = getClipboardManager();
         if (manager.getPrimaryClip() == null) {
             return "";

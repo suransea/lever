@@ -22,20 +22,36 @@ import io.reactivex.ObservableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-public class SchedulersTransformer {
+public class SchedulerTransformers {
 
     /**
      * 获取订阅于IO线程，观察于UI线程的Transformer
      *
      * @return target transformer
      */
-    public static <T> ObservableTransformer<T, T> get() {
+    public static <T> ObservableTransformer<T, T> android() {
         return new ObservableTransformer<T, T>() {
             @Override
             public ObservableSource<T> apply(Observable<T> upstream) {
                 return upstream.subscribeOn(Schedulers.io())
                         .unsubscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread());
+            }
+        };
+    }
+
+    /**
+     * 获取IO线程的Transformer
+     *
+     * @return target transformer
+     */
+    public static <T> ObservableTransformer<T, T> io() {
+        return new ObservableTransformer<T, T>() {
+            @Override
+            public ObservableSource<T> apply(Observable<T> upstream) {
+                return upstream.subscribeOn(Schedulers.io())
+                        .unsubscribeOn(Schedulers.io())
+                        .observeOn(Schedulers.io());
             }
         };
     }
