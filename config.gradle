@@ -2,7 +2,7 @@ ext {
     //compile config
     compileSdkVersion = 28
     buildToolsVersion = "28.0.2"
-    minSdkVersion = 19
+    minSdkVersion = 1
     targetSdkVersion = 28
 
     //版本号
