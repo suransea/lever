@@ -23,7 +23,7 @@ import android.widget.Toast;
 import top.srsea.lever.Lever;
 
 public class ToastBuilder {
-    private String content;
+    private String content = "";
     private View view;
     private int duration = Toast.LENGTH_SHORT;
     private boolean preparing = false;
@@ -54,20 +54,24 @@ public class ToastBuilder {
     }
 
     public Toast build() {
-        Toast toast = new Toast(Lever.getContext());
-        toast.setDuration(duration);
-        if (content != null) {
-            toast.setText(content);
-        }
-        if (view != null) {
-            toast.setView(view);
-        }
+        Toast toast = (view == null ? buildText() : buildView());
         if (gravity != -1) {
             toast.setGravity(gravity, xOffset, yOffset);
         }
         if (hMargin > 0 && vMargin > 0) {
             toast.setMargin(hMargin, vMargin);
         }
+        return toast;
+    }
+
+    private Toast buildText() {
+        return Toast.makeText(Lever.getContext(), content, duration);
+    }
+
+    private Toast buildView() {
+        Toast toast = new Toast(Lever.getContext());
+        toast.setDuration(duration);
+        toast.setView(view);
         return toast;
     }
 
