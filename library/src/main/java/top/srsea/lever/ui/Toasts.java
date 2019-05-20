@@ -16,7 +16,10 @@
 
 package top.srsea.lever.ui;
 
+import android.view.View;
+
 import androidx.annotation.StringRes;
+
 import top.srsea.lever.Lever;
 
 public class Toasts {
@@ -28,5 +31,10 @@ public class Toasts {
     public static ToastBuilder of(@StringRes int resId) {
         String content = Lever.getContext().getString(resId);
         return of(content);
+    }
+
+    public static ToastBuilder of(View view) {
+        if (view == null) return of("");
+        return new ToastBuilder().view(view);
     }
 }
