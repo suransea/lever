@@ -12,8 +12,6 @@ android {
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
 
-        testInstrumentationRunner rootProject.ext.androidJUnitRunner
-
     }
 
     buildTypes {
@@ -29,11 +27,9 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation rootProject.ext.appcompat
-    testImplementation rootProject.ext.junit
-    androidTestImplementation rootProject.ext.testRunner
-    androidTestImplementation rootProject.ext.espressoCore
-
     implementation rootProject.ext.rxjava
     implementation rootProject.ext.rxandroid
     implementation rootProject.ext.zxing
+    implementation rootProject.ext.torque
+    implementation rootProject.ext.rxpermission
 }

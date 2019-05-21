@@ -30,11 +30,11 @@ import com.google.zxing.qrcode.QRCodeReader;
 
 public class QRCodes {
 
-    public static QRCode of(String content) {
+    public static QRCode from(String content) {
         return new QRCode(content);
     }
 
-    public static QRCode of(Bitmap bitmap) {
+    public static QRCode from(Bitmap bitmap) {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
         int[] pixels = new int[width * height];

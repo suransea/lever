@@ -25,15 +25,15 @@ import androidx.annotation.RequiresApi;
 
 import top.srsea.lever.Lever;
 
-public class ClipboardUtils {
+public class Clipboards {
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
+    @RequiresApi(Build.VERSION_CODES.HONEYCOMB)
     private static ClipboardManager getClipboardManager() {
         return (ClipboardManager) Lever.getContext()
                 .getSystemService(Context.CLIPBOARD_SERVICE);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
+    @RequiresApi(Build.VERSION_CODES.HONEYCOMB)
     public static String getContent() {
         ClipboardManager manager = getClipboardManager();
         if (manager.getPrimaryClip() == null) {
@@ -42,7 +42,7 @@ public class ClipboardUtils {
         return manager.getPrimaryClip().getItemAt(0).getText().toString();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
+    @RequiresApi(Build.VERSION_CODES.HONEYCOMB)
     public static void setContent(String content) {
         ClipboardManager manager = getClipboardManager();
         manager.setPrimaryClip(ClipData.newPlainText(null, content));

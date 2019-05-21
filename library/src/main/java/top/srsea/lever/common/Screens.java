@@ -16,25 +16,31 @@
 
 package top.srsea.lever.common;
 
+import android.app.Activity;
+import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
-import android.util.TypedValue;
+
+import androidx.annotation.NonNull;
 
 import top.srsea.lever.Lever;
+import top.srsea.lever.graph.Bitmaps;
 
-public class DimenUtils {
+public class Screens {
     private DisplayMetrics displayMetrics = Lever.getContext().getResources().getDisplayMetrics();
 
-    public static int dp2px(float value) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value,
-                Singleton.INSTANCE.displayMetrics);
+    public static int getWidth() {
+        return Singleton.INSTANCE.displayMetrics.widthPixels;
     }
 
-    public static int sp2px(float value) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, value,
-                Singleton.INSTANCE.displayMetrics);
+    public static int getHeight() {
+        return Singleton.INSTANCE.displayMetrics.heightPixels;
+    }
+
+    public static Bitmap snapshot(@NonNull Activity activity) {
+        return Bitmaps.from(activity);
     }
 
     private static class Singleton {
-        private static final DimenUtils INSTANCE = new DimenUtils();
+        private static final Screens INSTANCE = new Screens();
     }
 }
