@@ -31,5 +31,5 @@ dependencies {
     implementation rootProject.ext.rxandroid
     implementation rootProject.ext.zxing
     implementation rootProject.ext.torque
-    implementation rootProject.ext.rxpermission
+    api rootProject.ext.rxpermission
 }
