@@ -35,10 +35,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import top.srsea.lever.rx.SchedulerTransformers;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 import top.srsea.torque.common.IOUtils;
 
 public class Bitmaps {
@@ -71,43 +69,22 @@ public class Bitmaps {
         return bitmap;
     }
 
-    public static void save(@NonNull final Bitmap source, @NonNull final File target,
-                            @Nullable final Bitmap.CompressFormat format, @Nullable final SaveObserver observer) {
-        Observable.just(source)
-                .compose(SchedulerTransformers.<Bitmap>android())
-                .doOnNext(new Consumer<Bitmap>() {
-                    @Override
-                    public void accept(Bitmap bitmap) throws Exception {
-                        File path = target.getParentFile();
-                        if (!path.exists()) {
-                            if (!path.mkdirs()) throw new IOException();
-                        }
-                        OutputStream stream = new FileOutputStream(target);
-                        bitmap.compress(format == null ? Bitmap.CompressFormat.PNG : format, 100, stream);
-                        stream.flush();
-                        IOUtils.close(stream);
-                    }
-                })
-                .subscribe(new Observer<Bitmap>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                    }
-
-                    @Override
-                    public void onNext(Bitmap bitmap) {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (observer == null) return;
-                        observer.onError(e.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        if (observer == null) return;
-                        observer.onComplete();
-                    }
-                });
+    public static Observable<File> save(@NonNull final Bitmap source, @NonNull final File target,
+                                        @Nullable final Bitmap.CompressFormat format) {
+        return Observable.create(new ObservableOnSubscribe<File>() {
+            @Override
+            public void subscribe(ObservableEmitter<File> emitter) throws Exception {
+                File path = target.getParentFile();
+                if (!path.exists()) {
+                    if (!path.mkdirs()) throw new IOException("cannot mkdirs.");
+                }
+                OutputStream stream = new FileOutputStream(target);
+                source.compress(format == null ? Bitmap.CompressFormat.PNG : format, 100, stream);
+                stream.flush();
+                IOUtils.close(stream);
+                emitter.onNext(target);
+                emitter.onComplete();
+            }
+        });
     }
 }
