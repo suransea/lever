@@ -18,13 +18,16 @@ package top.srsea.lever;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import java.lang.ref.WeakReference;
 
 public class Lever {
     private WeakReference<Context> contextWeakReference;
 
-    public static void init(Context appContext) {
-        Singleton.INSTANCE.contextWeakReference = new WeakReference<>(appContext);
+    public static void init(@NonNull Context appContext) {
+        Singleton.INSTANCE
+                .contextWeakReference = new WeakReference<>(appContext.getApplicationContext());
     }
 
     public static Context getContext() {
