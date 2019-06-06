@@ -26,8 +26,8 @@ public class Lever {
     private WeakReference<Context> contextWeakReference;
 
     public static void init(@NonNull Context appContext) {
-        Singleton.INSTANCE
-                .contextWeakReference = new WeakReference<>(appContext.getApplicationContext());
+        Lever lever = Singleton.INSTANCE;
+        lever.contextWeakReference = new WeakReference<>(appContext.getApplicationContext());
     }
 
     public static Context getContext() {
