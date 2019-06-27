@@ -187,6 +187,14 @@ Preferences.of(context, name); //指定名称
 Preferences.app(); //ApplicationContext获取的SharedPreference
 ```
 
+#### Preference
+
+```java
+Preference<String> version = new StringPreference("version", "", Preferences.of(context));
+version.get(); //获取值
+version.set("1.0"); //设置值 
+```
+
 #### Permissions
 
 ```java
