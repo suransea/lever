@@ -32,5 +32,4 @@ ext {
     zxing = 'com.google.zxing:core:3.4.0'
 
     torque = 'com.github.suransea:torque:1.0.10'
-    rxpermission = 'com.github.tbruyelle:rxpermissions:0.10.2'
 }

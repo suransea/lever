@@ -21,7 +21,7 @@ Add it in your root build.gradle at the end of repositories:
 Step 2. Add the dependency
 
 	dependencies {
-	        implementation 'com.github.suransea:lever:1.0.8'
+	        implementation 'com.github.suransea:lever:1.0.10'
 	}
 
 
