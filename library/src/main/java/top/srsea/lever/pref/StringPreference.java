@@ -16,16 +16,14 @@
 
 package top.srsea.lever.pref;
 
-import android.content.SharedPreferences;
-
 public class StringPreference extends Preference<String> {
 
     public StringPreference(String key, String defaultValue) {
         super(key, defaultValue);
     }
 
-    public StringPreference(String key, String defaultValue, SharedPreferences sharedPreferences) {
-        super(key, defaultValue, sharedPreferences);
+    public StringPreference(String key, String defaultValue, String preferenceName) {
+        super(key, defaultValue, preferenceName);
     }
 
     @Override

@@ -21,7 +21,7 @@ Add it in your root build.gradle at the end of repositories:
 Step 2. Add the dependency
 
 	dependencies {
-	        implementation 'com.github.suransea:lever:1.0.10'
+	        implementation 'com.github.suransea:lever:1.0.11'
 	}
 
 
@@ -179,28 +179,12 @@ Packages.openAppDetailSetting(packageName); //指定包名
 Packages.openApp(packageName);
 ```
 
-#### Preferences
-
-```java
-Preferences.of(context);
-Preferences.of(context, name); //指定名称
-Preferences.app(); //ApplicationContext获取的SharedPreference
-```
-
 #### Preference
 
 ```java
-Preference<String> version = new StringPreference("version", "", Preferences.of(context));
-version.get(); //获取值
-version.set("1.0"); //设置值 
-```
-
-#### Permissions
-
-```java
-Permissions.with(this)
-        .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        .subscribe();
+Preference<String> name = new StringPreference("name", "");
+name.get(); //获取值
+name.set("Alice"); //设置值 
 ```
 
 #### Screens

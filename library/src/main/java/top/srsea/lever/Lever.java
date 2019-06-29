@@ -16,8 +16,8 @@
 
 package top.srsea.lever;
 
+import android.app.Application;
 import android.content.Context;
-
 import androidx.annotation.NonNull;
 
 import java.lang.ref.WeakReference;
@@ -35,6 +35,10 @@ public class Lever {
             throw new RuntimeException("Please init lever before use it.");
         }
         return Singleton.INSTANCE.contextWeakReference.get();
+    }
+
+    public static Application getApplication() {
+        return (Application) getContext();
     }
 
     private static class Singleton {

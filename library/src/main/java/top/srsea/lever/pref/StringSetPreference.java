@@ -16,8 +16,6 @@
 
 package top.srsea.lever.pref;
 
-import android.content.SharedPreferences;
-
 import java.util.Set;
 
 public class StringSetPreference extends Preference<Set<String>> {
@@ -26,8 +24,8 @@ public class StringSetPreference extends Preference<Set<String>> {
         super(key, defaultValue);
     }
 
-    public StringSetPreference(String key, Set<String> defaultValue, SharedPreferences sharedPreferences) {
-        super(key, defaultValue, sharedPreferences);
+    public StringSetPreference(String key, Set<String> defaultValue, String preferenceName) {
+        super(key, defaultValue, preferenceName);
     }
 
     @Override

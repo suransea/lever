@@ -16,16 +16,14 @@
 
 package top.srsea.lever.pref;
 
-import android.content.SharedPreferences;
-
 public class FloatPreference extends Preference<Float> {
 
     public FloatPreference(String key, Float defaultValue) {
         super(key, defaultValue);
     }
 
-    public FloatPreference(String key, Float defaultValue, SharedPreferences sharedPreferences) {
-        super(key, defaultValue, sharedPreferences);
+    public FloatPreference(String key, Float defaultValue, String preferenceName) {
+        super(key, defaultValue, preferenceName);
     }
 
     @Override

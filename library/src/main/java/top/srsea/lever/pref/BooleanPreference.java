@@ -16,16 +16,14 @@
 
 package top.srsea.lever.pref;
 
-import android.content.SharedPreferences;
-
 public class BooleanPreference extends Preference<Boolean> {
 
     public BooleanPreference(String key, Boolean defaultValue) {
         super(key, defaultValue);
     }
 
-    public BooleanPreference(String key, Boolean defaultValue, SharedPreferences sharedPreferences) {
-        super(key, defaultValue, sharedPreferences);
+    public BooleanPreference(String key, Boolean defaultValue, String preferenceName) {
+        super(key, defaultValue, preferenceName);
     }
 
     @Override

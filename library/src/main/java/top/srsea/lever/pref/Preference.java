@@ -16,8 +16,10 @@
 
 package top.srsea.lever.pref;
 
+import android.content.Context;
 import android.content.SharedPreferences;
-import top.srsea.lever.common.Preferences;
+import android.preference.PreferenceManager;
+import top.srsea.lever.Lever;
 import top.srsea.torque.value.Property;
 
 public abstract class Preference<T> implements Property<T> {
@@ -26,13 +28,13 @@ public abstract class Preference<T> implements Property<T> {
     protected T defaultValue;
 
     public Preference(String key, T defaultValue) {
-        sharedPreferences = Preferences.app();
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(Lever.getContext());
         this.key = key;
         this.defaultValue = defaultValue;
     }
 
-    public Preference(String key, T defaultValue, SharedPreferences sharedPreferences) {
-        this.sharedPreferences = sharedPreferences;
+    public Preference(String key, T defaultValue, String preferenceName) {
+        this.sharedPreferences = Lever.getContext().getSharedPreferences(preferenceName, Context.MODE_PRIVATE);
         this.key = key;
         this.defaultValue = defaultValue;
     }
