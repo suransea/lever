@@ -64,4 +64,28 @@ public abstract class Preference<T> implements Property<T> {
     public static Preference<Set<String>> create(String key, Set<String> defaultValue, String prefName) {
         return new StringSetPreference(key, defaultValue, prefName);
     }
+
+    public static Preference<String> create(String key, String defaultValue) {
+        return new StringPreference(key, defaultValue);
+    }
+
+    public static Preference<Integer> create(String key, int defaultValue) {
+        return new IntPreference(key, defaultValue);
+    }
+
+    public static Preference<Long> create(String key, long defaultValue) {
+        return new LongPreference(key, defaultValue);
+    }
+
+    public static Preference<Boolean> create(String key, boolean defaultValue) {
+        return new BooleanPreference(key, defaultValue);
+    }
+
+    public static Preference<Float> create(String key, float defaultValue) {
+        return new FloatPreference(key, defaultValue);
+    }
+
+    public static Preference<Set<String>> create(String key, Set<String> defaultValue) {
+        return new StringSetPreference(key, defaultValue);
+    }
 }
