@@ -21,9 +21,10 @@ Add it in your root build.gradle at the end of repositories:
 Step 2. Add the dependency
 
 	dependencies {
-	        implementation 'com.github.suransea:lever:1.0.11'
+	        implementation 'com.github.suransea:lever:x.y.z'
 	}
 
+> x.y.z 替换为上方图标中版本号
 
 #### 初始化
 
@@ -182,7 +183,7 @@ Packages.openApp(packageName);
 #### Preference
 
 ```java
-Preference<String> name = new StringPreference("name", "");
+Preference<String> name = Preference.create("name", "");
 name.get(); //获取值
 name.set("Alice"); //设置值 
 ```
