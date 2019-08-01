@@ -22,6 +22,8 @@ import android.preference.PreferenceManager;
 import top.srsea.lever.Lever;
 import top.srsea.torque.value.Property;
 
+import java.util.Set;
+
 public abstract class Preference<T> implements Property<T> {
     protected SharedPreferences sharedPreferences;
     protected String key;
@@ -37,5 +39,29 @@ public abstract class Preference<T> implements Property<T> {
         this.sharedPreferences = Lever.getContext().getSharedPreferences(preferenceName, Context.MODE_PRIVATE);
         this.key = key;
         this.defaultValue = defaultValue;
+    }
+
+    public static Preference<String> create(String key, String defaultValue, String prefName) {
+        return new StringPreference(key, defaultValue, prefName);
+    }
+
+    public static Preference<Integer> create(String key, int defaultValue, String prefName) {
+        return new IntPreference(key, defaultValue, prefName);
+    }
+
+    public static Preference<Long> create(String key, long defaultValue, String prefName) {
+        return new LongPreference(key, defaultValue, prefName);
+    }
+
+    public static Preference<Boolean> create(String key, boolean defaultValue, String prefName) {
+        return new BooleanPreference(key, defaultValue, prefName);
+    }
+
+    public static Preference<Float> create(String key, float defaultValue, String prefName) {
+        return new FloatPreference(key, defaultValue, prefName);
+    }
+
+    public static Preference<Set<String>> create(String key, Set<String> defaultValue, String prefName) {
+        return new StringSetPreference(key, defaultValue, prefName);
     }
 }

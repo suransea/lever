@@ -19,25 +19,19 @@ package top.srsea.lever.graph;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.os.Build;
-import android.os.Handler;
-import android.view.PixelCopy;
 import android.view.View;
 import android.view.Window;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import top.srsea.torque.common.IOUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import top.srsea.torque.common.IOUtils;
 
 public class Bitmaps {
 
@@ -52,21 +46,6 @@ public class Bitmaps {
         Window window = activity.getWindow();
         View view = window.getDecorView();
         return from(view);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public static Bitmap from(@NonNull Activity activity, final Runnable callback, Handler callbackHandler) {
-        Window window = activity.getWindow();
-        View view = window.getDecorView();
-        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
-        PixelCopy.request(window, bitmap, new PixelCopy.OnPixelCopyFinishedListener() {
-            @Override
-            public void onPixelCopyFinished(int copyResult) {
-                if (callback == null) return;
-                callback.run();
-            }
-        }, callbackHandler);
-        return bitmap;
     }
 
     public static Observable<File> save(@NonNull final Bitmap source, @NonNull final File target,
