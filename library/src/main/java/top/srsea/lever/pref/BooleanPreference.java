@@ -16,6 +16,8 @@
 
 package top.srsea.lever.pref;
 
+import android.annotation.SuppressLint;
+
 public class BooleanPreference extends Preference<Boolean> {
 
     public BooleanPreference(String key, Boolean defaultValue) {
@@ -24,6 +26,12 @@ public class BooleanPreference extends Preference<Boolean> {
 
     public BooleanPreference(String key, Boolean defaultValue, String preferenceName) {
         super(key, defaultValue, preferenceName);
+    }
+
+    @SuppressLint("ApplySharedPref")
+    @Override
+    public void blockingSet(Boolean value) {
+        sharedPreferences.edit().putBoolean(key, value).commit();
     }
 
     @Override

@@ -26,8 +26,8 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    api rootProject.ext.appcompat
-    api rootProject.ext.zxing
+    implementation rootProject.ext.appcompat
+    implementation rootProject.ext.zxing
     api rootProject.ext.torque
     api rootProject.ext.rxjava
     api rootProject.ext.rxandroid

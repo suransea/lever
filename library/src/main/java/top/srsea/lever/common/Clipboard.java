@@ -20,12 +20,10 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Build;
-
 import androidx.annotation.RequiresApi;
-
 import top.srsea.lever.Lever;
 
-public class Clipboards {
+public class Clipboard {
 
     @RequiresApi(Build.VERSION_CODES.HONEYCOMB)
     private static ClipboardManager getClipboardManager() {
@@ -36,10 +34,11 @@ public class Clipboards {
     @RequiresApi(Build.VERSION_CODES.HONEYCOMB)
     public static String getContent() {
         ClipboardManager manager = getClipboardManager();
-        if (manager.getPrimaryClip() == null) {
-            return "";
-        }
-        return manager.getPrimaryClip().getItemAt(0).getText().toString();
+        if (!manager.hasPrimaryClip()) return "";
+        ClipData clipData = manager.getPrimaryClip();
+        if (clipData == null) return "";
+        if (clipData.getItemCount() <= 0) return "";
+        return clipData.getItemAt(0).coerceToText(Lever.getContext()).toString();
     }
 
     @RequiresApi(Build.VERSION_CODES.HONEYCOMB)

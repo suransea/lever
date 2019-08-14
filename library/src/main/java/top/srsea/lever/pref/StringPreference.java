@@ -16,6 +16,8 @@
 
 package top.srsea.lever.pref;
 
+import android.annotation.SuppressLint;
+
 public class StringPreference extends Preference<String> {
 
     public StringPreference(String key, String defaultValue) {
@@ -24,6 +26,12 @@ public class StringPreference extends Preference<String> {
 
     public StringPreference(String key, String defaultValue, String preferenceName) {
         super(key, defaultValue, preferenceName);
+    }
+
+    @SuppressLint("ApplySharedPref")
+    @Override
+    public void blockingSet(String value) {
+        sharedPreferences.edit().putString(key, value).commit();
     }
 
     @Override

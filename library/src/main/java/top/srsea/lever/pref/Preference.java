@@ -88,4 +88,6 @@ public abstract class Preference<T> implements Property<T> {
     public static Preference<Set<String>> create(String key, Set<String> defaultValue) {
         return new StringSetPreference(key, defaultValue);
     }
+
+    public abstract void blockingSet(T value);
 }

@@ -16,16 +16,13 @@
 
 package top.srsea.lever.common;
 
-import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
-
 import androidx.core.app.NotificationManagerCompat;
-
 import top.srsea.lever.Lever;
 
 public class Notifications {
@@ -65,23 +62,5 @@ public class Notifications {
         }
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
-    }
-
-
-    /**
-     * 发送通知
-     *
-     * @param notification 待发送的通知
-     */
-    public static void send(Notification notification) {
-        NotificationManagerCompat.from(Lever.getContext()).notify(0, notification);
-    }
-
-    public static void send(int id, Notification notification) {
-        NotificationManagerCompat.from(Lever.getContext()).notify(id, notification);
-    }
-
-    public static void send(String tag, int id, Notification notification) {
-        NotificationManagerCompat.from(Lever.getContext()).notify(tag, id, notification);
     }
 }

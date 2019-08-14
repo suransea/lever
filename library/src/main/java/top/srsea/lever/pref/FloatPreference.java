@@ -16,6 +16,8 @@
 
 package top.srsea.lever.pref;
 
+import android.annotation.SuppressLint;
+
 public class FloatPreference extends Preference<Float> {
 
     public FloatPreference(String key, Float defaultValue) {
@@ -24,6 +26,12 @@ public class FloatPreference extends Preference<Float> {
 
     public FloatPreference(String key, Float defaultValue, String preferenceName) {
         super(key, defaultValue, preferenceName);
+    }
+
+    @SuppressLint("ApplySharedPref")
+    @Override
+    public void blockingSet(Float value) {
+        sharedPreferences.edit().putFloat(key, value).commit();
     }
 
     @Override

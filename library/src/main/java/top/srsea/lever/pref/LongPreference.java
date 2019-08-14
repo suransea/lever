@@ -16,6 +16,8 @@
 
 package top.srsea.lever.pref;
 
+import android.annotation.SuppressLint;
+
 public class LongPreference extends Preference<Long> {
 
     public LongPreference(String key, Long defaultValue) {
@@ -24,6 +26,12 @@ public class LongPreference extends Preference<Long> {
 
     public LongPreference(String key, Long defaultValue, String preferenceName) {
         super(key, defaultValue, preferenceName);
+    }
+
+    @SuppressLint("ApplySharedPref")
+    @Override
+    public void blockingSet(Long value) {
+        sharedPreferences.edit().putLong(key, value).commit();
     }
 
     @Override
