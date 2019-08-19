@@ -23,7 +23,7 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 import top.srsea.lever.Lever;
 
-public class Clipboard {
+public class Clipboards {
 
     @RequiresApi(Build.VERSION_CODES.HONEYCOMB)
     private static ClipboardManager getClipboardManager() {

@@ -56,10 +56,10 @@ Toasts.of(view).showShort();
 Toasts.of(R.string.content).showLong();
 ```
 
-非UI线程
+指定主线程
 
 ```java
-Toasts.of(R.string.content).prepare().showShort();
+Toasts.of(R.string.content).mainThread().showShort();
 ```
 
 其他参数
@@ -133,10 +133,10 @@ Clipboards.getContent();          //获取文本内容
 Clipboards.setContent("content"); //设置文本内容
 ```
 
-#### DensityUtils
+#### DimensionUnit
 
 ```java
-dp2px, sp2px, px2dp, px2sp
+float pxVal = DimensionUnit.DP.toPx(10);
 ```
 
 #### 通知
@@ -151,11 +151,6 @@ boolean allowed = Notifications.isPermissionGranted();
 
 ```java
 Notifications.openNotificationSetting();
-```
-
-发送通知
-```java
-Notifications.send(tag, id, notification); //发送通知
 ```
 
 #### Packages

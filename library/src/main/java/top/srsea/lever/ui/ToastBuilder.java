@@ -16,17 +16,17 @@
 
 package top.srsea.lever.ui;
 
+import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.widget.Toast;
-
 import top.srsea.lever.Lever;
 
 public class ToastBuilder {
     private String content = "";
     private View view;
     private int duration = Toast.LENGTH_SHORT;
-    private boolean preparing = false;
+    private boolean mainThread = false;
     private float hMargin = -1f;
     private float vMargin = -1f;
     private int gravity = -1;
@@ -75,9 +75,8 @@ public class ToastBuilder {
         return toast;
     }
 
-    public ToastBuilder prepare() {
-        Looper.prepare();
-        preparing = true;
+    public ToastBuilder mainThread() {
+        mainThread = true;
         return this;
     }
 
@@ -95,10 +94,16 @@ public class ToastBuilder {
     }
 
     private void show() {
+        if (mainThread) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    build().show();
+                }
+            });
+            return;
+        }
         build().show();
-        if (!preparing) return;
-        Looper.loop();
-        preparing = false;
     }
 
     public void showShort() {

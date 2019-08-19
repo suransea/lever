@@ -17,10 +17,8 @@
 package top.srsea.lever.ui;
 
 import android.view.View;
-
 import androidx.annotation.StringRes;
-
-import top.srsea.lever.Lever;
+import top.srsea.lever.common.Res;
 
 public class Toasts {
     public static ToastBuilder of(String content) {
@@ -29,7 +27,7 @@ public class Toasts {
     }
 
     public static ToastBuilder of(@StringRes int resId) {
-        String content = Lever.getContext().getString(resId);
+        String content = Res.string(resId);
         return of(content);
     }
 
