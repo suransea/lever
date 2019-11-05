@@ -18,13 +18,7 @@ package top.srsea.lever.graph;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-
-import com.google.zxing.BinaryBitmap;
-import com.google.zxing.ChecksumException;
-import com.google.zxing.FormatException;
-import com.google.zxing.NotFoundException;
-import com.google.zxing.RGBLuminanceSource;
-import com.google.zxing.Result;
+import com.google.zxing.*;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
 
@@ -65,12 +59,10 @@ public class QRCodes {
         if (srcWidth == 0 || srcHeight == 0) return null;
         if (logoWidth == 0 || logoHeight == 0) return src;
         float scaleFactor = srcWidth * 1.0f / 5 / logoWidth;
-        Bitmap bitmap = Bitmap.createBitmap(srcWidth, srcHeight, Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = src.copy(src.getConfig(), true);
         Canvas canvas = new Canvas(bitmap);
-        canvas.drawBitmap(src, 0, 0, null);
         canvas.scale(scaleFactor, scaleFactor, srcWidth / 2f, srcHeight / 2f);
-        canvas.drawBitmap(logo, (srcWidth - logoWidth) / 2f,
-                (srcHeight - logoHeight) / 2f, null);
+        canvas.drawBitmap(logo, (srcWidth - logoWidth) / 2f, (srcHeight - logoHeight) / 2f, null);
         return bitmap;
     }
 }

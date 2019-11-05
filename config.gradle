@@ -1,7 +1,7 @@
 ext {
     //compile config
-    compileSdkVersion = 28
-    buildToolsVersion = "28.0.2"
+    compileSdkVersion = 29
+    buildToolsVersion = "29.0.2"
     minSdkVersion = 14
     targetSdkVersion = 28
 
@@ -31,5 +31,5 @@ ext {
     retrofitGsonConverter = 'com.squareup.retrofit2:converter-gson:2.5.0'
     zxing = 'com.google.zxing:core:3.4.0'
 
-    torque = 'com.github.suransea:torque:1.0.10'
+    torque = 'com.github.suransea:torque:1.1.1'
 }

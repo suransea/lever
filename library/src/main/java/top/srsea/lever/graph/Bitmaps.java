@@ -16,54 +16,113 @@
 
 package top.srsea.lever.graph;
 
-import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.PointF;
+import android.net.Uri;
+import android.os.ParcelFileDescriptor;
 import android.view.View;
-import android.view.Window;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Single;
+import io.reactivex.functions.Function;
+import okhttp3.ResponseBody;
+import top.srsea.lever.Lever;
+import top.srsea.lever.storage.MediaHelper;
+import top.srsea.lever.storage.StorageHelper;
 import top.srsea.torque.common.IOUtils;
+import top.srsea.torque.common.Preconditions;
+import top.srsea.torque.network.DownloadService;
+import top.srsea.torque.network.RetrofitProvider;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.UUID;
+import java.util.concurrent.Callable;
 
 public class Bitmaps {
 
-    public static Bitmap from(@NonNull View view) {
-        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+    public static Bitmap fromView(@NonNull View view, Bitmap.Config config) {
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), config);
         Canvas canvas = new Canvas(bitmap);
         view.draw(canvas);
         return bitmap;
     }
 
-    public static Bitmap from(@NonNull Activity activity) {
-        Window window = activity.getWindow();
-        View view = window.getDecorView();
-        return from(view);
-    }
-
-    public static Observable<File> save(@NonNull final Bitmap source, @NonNull final File target,
-                                        @Nullable final Bitmap.CompressFormat format) {
-        return Observable.create(new ObservableOnSubscribe<File>() {
+    public static Single<Bitmap> fromUri(final Uri uri) {
+        return Single.fromCallable(new Callable<Bitmap>() {
             @Override
-            public void subscribe(ObservableEmitter<File> emitter) throws Exception {
-                File path = target.getParentFile();
-                if (!path.exists()) {
-                    if (!path.mkdirs()) throw new IOException("cannot mkdirs.");
-                }
-                OutputStream stream = new FileOutputStream(target);
-                source.compress(format == null ? Bitmap.CompressFormat.PNG : format, 100, stream);
-                stream.flush();
-                IOUtils.close(stream);
-                emitter.onNext(target);
-                emitter.onComplete();
+            public Bitmap call() throws Exception {
+                Context context = Lever.getContext();
+                ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, "r");
+                Preconditions.requireNonNull(pfd);
+                Bitmap bitmap = BitmapFactory.decodeFileDescriptor(pfd.getFileDescriptor());
+                IOUtils.close(pfd);
+                return bitmap;
             }
         });
+    }
+
+    public static Single<Bitmap> fromHttp(final String url) {
+        return Single.fromObservable(RetrofitProvider.get()
+                .create(DownloadService.class)
+                .download(url)
+                .map(new Function<ResponseBody, Bitmap>() {
+                    @Override
+                    public Bitmap apply(ResponseBody responseBody) {
+                        InputStream stream = responseBody.byteStream();
+                        Bitmap bitmap = BitmapFactory.decodeStream(stream);
+                        IOUtils.close(stream);
+                        return bitmap;
+                    }
+                }));
+    }
+
+    public static Bitmap addWatermark(Bitmap source, Bitmap watermark, PointF position, PointF pivot) {
+        float[] params = new float[]{position.x, position.y, pivot.x, pivot.y};
+        for (float value : params) {
+            Preconditions.require(value >= 0 && value <= 1);
+        }
+        float sourceWidth = source.getWidth();
+        float sourceHeight = source.getHeight();
+        float watermarkWidth = watermark.getWidth();
+        float watermarkHeight = watermark.getHeight();
+        Bitmap target = source.copy(source.getConfig(), true);
+        Canvas canvas = new Canvas(target);
+        PointF watermarkPosition = new PointF(sourceWidth * position.x, sourceHeight * position.y);
+        float left = watermarkPosition.x - watermarkWidth * pivot.x;
+        float top = watermarkPosition.y - watermarkHeight * pivot.y;
+        canvas.drawBitmap(watermark, left, top, null);
+        return target;
+    }
+
+    /**
+     * 将bitmap保存到缓存文件夹
+     *
+     * @param bitmap  源bitmap
+     * @param format  压缩格式 {@link Bitmap#compress}
+     * @param quality 质量 {@link Bitmap#compress}
+     * @return 保存后的文件对象, 文件名为随机UUID {@link UUID#randomUUID()}
+     */
+    public static Single<File> saveToCacheDir(final Bitmap bitmap, final Bitmap.CompressFormat format, final int quality) {
+        return Single.fromCallable(new Callable<File>() {
+            @Override
+            public File call() throws Exception {
+                File cacheDir = StorageHelper.getCacheDir();
+                String filename = UUID.randomUUID().toString().concat(".").concat(format.name().toLowerCase());
+                File target = new File(cacheDir, filename);
+                OutputStream out = new FileOutputStream(target);
+                bitmap.compress(format, quality, out);
+                IOUtils.close(out);
+                return target;
+            }
+        });
+    }
+
+    public static Single<Uri> insertToMediaStore(final Bitmap bitmap, final String name, final Bitmap.CompressFormat format, final int quality) {
+        return MediaHelper.insertToMediaStore(bitmap, name, format, quality);
     }
 }

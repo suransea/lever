@@ -14,23 +14,29 @@
  * limitations under the License.
  */
 
-package top.srsea.lever.common;
+package top.srsea.lever.storage;
 
-import android.util.DisplayMetrics;
+import android.content.Context;
+import android.os.Environment;
 import top.srsea.lever.Lever;
 
-public class Screens {
-    private DisplayMetrics displayMetrics = Lever.getContext().getResources().getDisplayMetrics();
+import java.io.File;
 
-    public static int getWidth() {
-        return Holder.displayMetrics.widthPixels;
+public class StorageHelper {
+
+    /**
+     * 外部存储是否挂载
+     *
+     * @return if external storage state is mounted
+     */
+    public static boolean isExternalMounted() {
+        String status = Environment.getExternalStorageState();
+        return Environment.MEDIA_MOUNTED.equals(status);
     }
 
-    public static int getHeight() {
-        return Holder.displayMetrics.heightPixels;
-    }
-
-    private static class Holder {
-        private static final DisplayMetrics displayMetrics = Lever.getContext().getResources().getDisplayMetrics();
+    public static File getCacheDir() {
+        Context context = Lever.getContext();
+        return isExternalMounted() ?
+                context.getExternalCacheDir() : context.getCacheDir();
     }
 }

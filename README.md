@@ -181,6 +181,9 @@ Packages.openApp(packageName);
 Preference<String> name = Preference.create("name", "");
 name.get(); //获取值
 name.set("Alice"); //设置值 
+name.blockingSet("Alice"); //使用commit设置值
+name.remove(); //删除值
+name.blockingRemove(); //使用commit删除值
 ```
 
 #### Screens
@@ -192,37 +195,15 @@ Screens.getWidth();
 Screens.getHeight();
 ```
 
-截图
-
-```java
-Screens.snapshot(activity);
-```
-
 #### Bitmaps
 
-从视图绘制
-
 ```java
-Bitmaps.from(view);
-Bitmaps.from(activity);
-```
-
-保存bitmap为文件
-
-```java
-Bitmaps.save(bitmap, targetFile, Bitmap.CompressFormat.PNG)
-        .compose(SchedulerTransformers.<File>android())
-        .subscribe(new Consumer<File>() {
-            @Override
-            public void accept(File saved) throws Exception {
-                //保存成功
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable throwable) throws Exception {
-                //处理异常
-            }
-        });
+Bitmaps.fromView(view);
+Bitmaps.fromUri(uri);
+Bitmaps.fromHttp(url);
+Bitmaps.addWatermark(src, watermark, position, pivot);
+Bitmaps.saveToCacheDir(src, format, quality);
+Bitmaps.insertToMediaStore(src, format, quality);
 ```
 
 #### SchedulerTransformers
@@ -232,4 +213,4 @@ SchedulerTransformers.android(); //订阅于IO线程, 观察于UI线程
 SchedulerTransformers.io(); //订阅&观察于IO线程
 ```
 
-> 逐步更新中...
+> 使用说明并未包括所有

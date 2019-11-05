@@ -26,15 +26,22 @@ public class Lever {
     private WeakReference<Context> contextWeakReference;
 
     public static void init(@NonNull Context appContext) {
-        Lever lever = Singleton.INSTANCE;
-        lever.contextWeakReference = new WeakReference<>(appContext.getApplicationContext());
+        getInstance().contextWeakReference = new WeakReference<>(appContext.getApplicationContext());
+    }
+
+    public static boolean hasInitialized() {
+        return getInstance().contextWeakReference != null;
+    }
+
+    public static Lever getInstance() {
+        return Singleton.INSTANCE;
     }
 
     public static Context getContext() {
-        if (Singleton.INSTANCE.contextWeakReference == null) {
+        if (getInstance().contextWeakReference == null) {
             throw new RuntimeException("Please init lever before use it.");
         }
-        return Singleton.INSTANCE.contextWeakReference.get();
+        return getInstance().contextWeakReference.get();
     }
 
     public static Application getApplication() {

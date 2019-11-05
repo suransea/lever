@@ -16,9 +16,9 @@
 
 package top.srsea.lever.pref;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import top.srsea.lever.Lever;
 import top.srsea.torque.value.Property;
 
@@ -30,7 +30,8 @@ public abstract class Preference<T> implements Property<T> {
     protected T defaultValue;
 
     public Preference(String key, T defaultValue) {
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(Lever.getContext());
+        Context context = Lever.getContext();
+        sharedPreferences = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_PRIVATE);
         this.key = key;
         this.defaultValue = defaultValue;
     }
@@ -90,4 +91,13 @@ public abstract class Preference<T> implements Property<T> {
     }
 
     public abstract void blockingSet(T value);
+
+    public void remove() {
+        sharedPreferences.edit().remove(key).apply();
+    }
+
+    @SuppressLint("ApplySharedPref")
+    public void blockingRemove() {
+        sharedPreferences.edit().remove(key).commit();
+    }
 }
