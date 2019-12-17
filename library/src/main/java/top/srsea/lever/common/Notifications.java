@@ -30,14 +30,22 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * Utilities for android notifications.
+ *
+ * @author sea
+ */
 public class Notifications {
-    private static final String CHECK_OP_NO_THROW = "checkOpNoThrow";
-    private static final String OP_POST_NOTIFICATION = "OP_POST_NOTIFICATION";
+    private static final String CHECK_OP_NO_THROW = "checkOpNoThrow"; //method name
+    private static final String OP_POST_NOTIFICATION = "OP_POST_NOTIFICATION"; //field name
+
+    private Notifications() {
+    }
 
     /**
-     * 判断是否有通知权限
+     * Determines if there is notification permission.
      *
-     * @return true if granted
+     * @return there is notification permission or not
      */
     public static boolean isPermissionGranted() {
         Context context = Lever.getContext();
@@ -71,7 +79,7 @@ public class Notifications {
 
 
     /**
-     * 打开通知设置页面
+     * Opens the notification settings page.
      */
     public static void openNotificationSetting() {
         Context context = Lever.getContext();

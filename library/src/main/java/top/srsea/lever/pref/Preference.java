@@ -24,11 +24,37 @@ import top.srsea.torque.value.Property;
 
 import java.util.Set;
 
+/**
+ * A wrapper of {@link SharedPreferences}
+ *
+ * @param <T> type of value
+ * @author sea
+ * @see SharedPreferences
+ * @see Property
+ */
 public abstract class Preference<T> implements Property<T> {
+
+    /**
+     * SharedPreference instance to operate.
+     */
     protected SharedPreferences sharedPreferences;
+
+    /**
+     * Key of this preference.
+     */
     protected String key;
+
+    /**
+     * Default value when this value not exists.
+     */
     protected T defaultValue;
 
+    /**
+     * Constructs an instance with the key and default value.
+     *
+     * @param key          the key for the preference
+     * @param defaultValue the default value for the preference
+     */
     public Preference(String key, T defaultValue) {
         Context context = Lever.getContext();
         sharedPreferences = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_PRIVATE);
@@ -36,11 +62,20 @@ public abstract class Preference<T> implements Property<T> {
         this.defaultValue = defaultValue;
     }
 
+    /**
+     * Constructs an instance with the key, default value and preference name.
+     *
+     * @param key            the key for the preference
+     * @param defaultValue   the default value for the preference
+     * @param preferenceName the preference name of the preference
+     */
     public Preference(String key, T defaultValue, String preferenceName) {
         this.sharedPreferences = Lever.getContext().getSharedPreferences(preferenceName, Context.MODE_PRIVATE);
         this.key = key;
         this.defaultValue = defaultValue;
     }
+
+    // some convenient factory method provided
 
     public static Preference<String> create(String key, String defaultValue, String prefName) {
         return new StringPreference(key, defaultValue, prefName);
@@ -90,12 +125,28 @@ public abstract class Preference<T> implements Property<T> {
         return new StringSetPreference(key, defaultValue);
     }
 
+    // factory method end
+
+    /**
+     * Modifies this value use commit.
+     *
+     * @param value value to set
+     * @see SharedPreferences.Editor#commit()
+     */
     public abstract void blockingSet(T value);
 
+    /**
+     * Removes this value.
+     */
     public void remove() {
         sharedPreferences.edit().remove(key).apply();
     }
 
+    /**
+     * Removes this value use commit.
+     *
+     * @see SharedPreferences.Editor#commit()
+     */
     @SuppressLint("ApplySharedPref")
     public void blockingRemove() {
         sharedPreferences.edit().remove(key).commit();

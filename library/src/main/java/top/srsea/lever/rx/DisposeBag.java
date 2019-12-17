@@ -22,16 +22,27 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 /**
- * Disposable容器
+ * Containers of disposables.
+ *
+ * @author sea
+ * @see ArrayList
  */
 public class DisposeBag extends ArrayList<WeakReference<Disposable>> {
+
+    /**
+     * Adds weak reference of the disposable to this container.
+     *
+     * @param disposable the disposable to add
+     * @return true (as specified by {@link ArrayList#add}),
+     * false when disposable is null or disposable has been disposed.
+     */
     public boolean add(Disposable disposable) {
         if (disposable == null || disposable.isDisposed()) return false;
         return super.add(new WeakReference<>(disposable));
     }
 
     /**
-     * 释放全部disposables
+     * Disposes all disposables.
      */
     public synchronized void release() {
         for (WeakReference<Disposable> item : this) {
@@ -41,6 +52,11 @@ public class DisposeBag extends ArrayList<WeakReference<Disposable>> {
         clear();
     }
 
+    /**
+     * When this object is being recycling, disposes all disposables.
+     *
+     * @throws Throwable any exceptions from {@link Object#finalize()}
+     */
     @Override
     protected void finalize() throws Throwable {
         release();

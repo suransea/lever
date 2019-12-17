@@ -22,18 +22,32 @@ import top.srsea.lever.Lever;
 
 import java.io.File;
 
+/**
+ * Utilities for storages.
+ *
+ * @author sea
+ */
 public class StorageHelper {
+    private StorageHelper() {
+    }
 
     /**
-     * 外部存储是否挂载
+     * Returns a value whether the external storage mounted.
      *
-     * @return if external storage state is mounted
+     * @return {@code true} if the external storage state is mounted
      */
     public static boolean isExternalMounted() {
         String status = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED.equals(status);
     }
 
+    /**
+     * Returns the cache directory.
+     * If the external storage mounted, external cache directory will be return,
+     * otherwise internal cache directory returned.
+     *
+     * @return the cache directory
+     */
     public static File getCacheDir() {
         Context context = Lever.getContext();
         return isExternalMounted() ?

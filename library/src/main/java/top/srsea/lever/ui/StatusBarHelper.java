@@ -19,26 +19,47 @@ package top.srsea.lever.ui;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
-import androidx.annotation.RequiresApi;
+/**
+ * Utilities for a status bar.
+ *
+ * @author sea
+ */
+public class StatusBarHelper {
+    private Window window; // the window of this activity
+    private View decorView; // the decor view of this activity
 
-public class StatusBar {
-    private Window window;
-    private View decorView;
-
-    StatusBar(Activity activity) {
+    /**
+     * Constructs an instance from an activity.
+     *
+     * @param activity an activity
+     */
+    private StatusBarHelper(Activity activity) {
         window = activity.getWindow();
         decorView = window.getDecorView();
     }
 
     /**
-     * 隐藏状态栏
+     * Creates a StatusBarHelper with the given activity.
+     *
+     * @param activity an activity
+     * @return StatusBarHelper instance
+     */
+    public static StatusBarHelper get(Activity activity) {
+        return new StatusBarHelper(activity);
+    }
+
+    /**
+     * Hides the status bar for this window.
+     *
+     * <p>If there is a navigation bar, the navigation bar will also be hidden.
      */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    public StatusBar hide() {
+    public StatusBarHelper hide() {
         int flag = View.SYSTEM_UI_FLAG_LOW_PROFILE
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -52,12 +73,15 @@ public class StatusBar {
     }
 
     /**
-     * 设置状态栏明暗
+     * Switches the status bar to dark or light.
      *
-     * @param dark 是否暗色
+     * <p>If there is a navigation bar, and the platform API level is greater or equal to 26,
+     * the navigation bar will also be switched.
+     *
+     * @param dark to dark or light
      */
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public StatusBar setBrightness(boolean dark) {
+    public StatusBarHelper setBrightness(boolean dark) {
         int flag = decorView.getSystemUiVisibility();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (dark) {
@@ -76,10 +100,13 @@ public class StatusBar {
     }
 
     /**
-     * 设置状态栏为全透明
+     * Sets the status bar to be fully transparent.
+     *
+     * <p>If there is a navigation bar, and the platform API level is greater or equal to 26,
+     * the navigation bar will also be set.
      */
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public StatusBar setFullTransparent() {
+    public StatusBarHelper setFullTransparent() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             window.setNavigationBarColor(Color.TRANSPARENT);
         }

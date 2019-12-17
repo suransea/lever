@@ -22,14 +22,22 @@ import io.reactivex.ObservableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
+/**
+ * Transformers for RxJava thread schedules.
+ *
+ * @author sea
+ * @see Observable#compose(ObservableTransformer)
+ */
 public class SchedulerTransformers {
 
     /**
-     * 获取订阅于IO线程，观察于UI线程的Transformer
+     * Transformer, working on IO threads, notifying on the main thread.
      *
      * @return target transformer
+     * @see Schedulers#io()
+     * @see AndroidSchedulers#mainThread()
      */
-    public static <T> ObservableTransformer<T, T> android() {
+    public static <T> ObservableTransformer<T, T> ioToMain() {
         return new ObservableTransformer<T, T>() {
             @Override
             public ObservableSource<T> apply(Observable<T> upstream) {
@@ -41,9 +49,10 @@ public class SchedulerTransformers {
     }
 
     /**
-     * 获取IO线程的Transformer
+     * Transformer, working and notifying on IO threads.
      *
      * @return target transformer
+     * @see Schedulers#io()
      */
     public static <T> ObservableTransformer<T, T> io() {
         return new ObservableTransformer<T, T>() {
@@ -55,5 +64,4 @@ public class SchedulerTransformers {
             }
         };
     }
-
 }

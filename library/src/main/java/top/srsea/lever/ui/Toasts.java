@@ -16,21 +16,47 @@
 
 package top.srsea.lever.ui;
 
+import android.support.annotation.StringRes;
 import android.view.View;
-import androidx.annotation.StringRes;
 import top.srsea.lever.common.Res;
 
+/**
+ * A ToastBuilder factory.
+ *
+ * @author sea
+ * @see ToastBuilder
+ * @see android.widget.Toast
+ */
 public class Toasts {
+
+    /**
+     * Creates a ToastBuilder with the specific content.
+     *
+     * @param content the specific content
+     * @return a ToastBuilder with the specific content
+     */
     public static ToastBuilder of(String content) {
         if (content == null) content = "";
         return new ToastBuilder().content(content);
     }
 
+    /**
+     * Creates a ToastBuilder with the string res identifier.
+     *
+     * @param resId the string res identifier
+     * @return a ToastBuilder with the string res identifier
+     */
     public static ToastBuilder of(@StringRes int resId) {
         String content = Res.string(resId);
         return of(content);
     }
 
+    /**
+     * Creates a ToastBuilder with the custom view.
+     *
+     * @param view the custom view
+     * @return a ToastBuilder with the custom view
+     */
     public static ToastBuilder of(View view) {
         if (view == null) return of("");
         return new ToastBuilder().view(view);

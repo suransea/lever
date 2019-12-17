@@ -18,6 +18,12 @@ package top.srsea.lever.pref;
 
 import android.annotation.SuppressLint;
 
+/**
+ * Boolean preference.
+ *
+ * @author sea
+ * @see Preference
+ */
 public class BooleanPreference extends Preference<Boolean> {
 
     public BooleanPreference(String key, Boolean defaultValue) {

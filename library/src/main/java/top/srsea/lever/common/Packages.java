@@ -16,30 +16,36 @@
 
 package top.srsea.lever.common;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
-
-import androidx.annotation.NonNull;
-
+import android.support.annotation.NonNull;
 import top.srsea.lever.Lever;
 
+/**
+ * Utilities for packages.
+ *
+ * @author sea
+ */
 public class Packages {
+
+    // some common package names
     public static final String WECHAT = "com.tencent.mm";
     public static final String QQ = "com.tencent.mobileqq";
     public static final String TAOBAO = "com.taobao.taobao";
     public static final String ALIPAY = "com.eg.android.AlipayGphone";
 
+    private Packages() {
+    }
 
     /**
-     * 判断应用是否安装
+     * Determines whether the application corresponding to the package name is installed.
      *
-     * @param packageName 包名
-     * @return true if installed
+     * @param packageName application package name
+     * @return {@code true} if installed
      */
     public static boolean isInstalled(@NonNull String packageName) {
         PackageManager packageManager = Lever.getContext().getPackageManager();
@@ -52,9 +58,9 @@ public class Packages {
     }
 
     /**
-     * 打开应用信息页
+     * Opens the app detail settings page.
      *
-     * @param packageName 包名
+     * @param packageName application package name
      */
     public static void openAppDetailSetting(@NonNull String packageName) {
         Intent intent = new Intent();
@@ -72,13 +78,13 @@ public class Packages {
 
 
     /**
-     * 打开应用
+     * Open the application corresponding to the package name.
      *
-     * @param packageName 包名
+     * @param packageName the specific package name.
      */
     public static void openApp(String packageName) {
         Context context = Lever.getContext();
-        PackageManager packageManager = Lever.getContext().getPackageManager();
+        PackageManager packageManager = context.getPackageManager();
         Intent intent = packageManager.getLaunchIntentForPackage(packageName);
         if (intent == null) return;
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -87,7 +93,7 @@ public class Packages {
 
 
     /**
-     * 打开此应用的应用信息页
+     * Opens the detail settings page of this application.
      */
     public static void openAppDetailSetting() {
         openAppDetailSetting(Lever.getContext().getPackageName());

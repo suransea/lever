@@ -19,18 +19,36 @@ package top.srsea.lever.common;
 import android.util.DisplayMetrics;
 import top.srsea.lever.Lever;
 
+/**
+ * Utilities for screens.
+ *
+ * @author sea
+ */
 public class Screens {
-    private DisplayMetrics displayMetrics = Lever.getContext().getResources().getDisplayMetrics();
+    private Screens() {
+    }
 
+    /**
+     * Gets the absolute width of the available display size in pixels.
+     *
+     * @return the absolute width of the available display size in pixels
+     */
     public static int getWidth() {
         return Holder.displayMetrics.widthPixels;
     }
 
+    /**
+     * Gets the absolute height of the available display size in pixels.
+     *
+     * @return the absolute height of the available display size in pixels.
+     */
     public static int getHeight() {
         return Holder.displayMetrics.heightPixels;
     }
 
     private static class Holder {
+
+        // singleton displayMetrics from resources
         private static final DisplayMetrics displayMetrics = Lever.getContext().getResources().getDisplayMetrics();
     }
 }

@@ -20,18 +20,40 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Build;
-import androidx.annotation.RequiresApi;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import top.srsea.lever.Lever;
+import top.srsea.torque.common.Preconditions;
 
+/**
+ * Utilities for android clipboards.
+ *
+ * @author sea
+ * @see Context#CLIPBOARD_SERVICE
+ * @see ClipboardManager
+ */
 public class Clipboards {
+    private Clipboards() {
+    }
 
-    @RequiresApi(Build.VERSION_CODES.HONEYCOMB)
+    /**
+     * Gets the clipboard manager service.
+     *
+     * @return clipboard manager service
+     * @see Context#CLIPBOARD_SERVICE
+     */
     private static ClipboardManager getClipboardManager() {
         return (ClipboardManager) Lever.getContext()
                 .getSystemService(Context.CLIPBOARD_SERVICE);
     }
 
-    @RequiresApi(Build.VERSION_CODES.HONEYCOMB)
+    /**
+     * Gets the content in the primary clipboard.
+     * A {@code ""} returns when having no content.
+     *
+     * @return the content in the primary clipboard or a {@code ""}.
+     */
     public static String getContent() {
         ClipboardManager manager = getClipboardManager();
         if (!manager.hasPrimaryClip()) return "";
@@ -41,12 +63,50 @@ public class Clipboards {
         return clipData.getItemAt(0).coerceToText(Lever.getContext()).toString();
     }
 
-    @RequiresApi(Build.VERSION_CODES.HONEYCOMB)
-    public static void setContent(String content) {
+    /**
+     * Sets the primary clipboard to the specific content.
+     * If the content is null, it will be replaced with {@code ""}.
+     *
+     * @param content the specific content
+     */
+    public static void setContent(@Nullable String content) {
         ClipboardManager manager = getClipboardManager();
+        if (content == null) {
+            content = "";
+        }
         manager.setPrimaryClip(ClipData.newPlainText(null, content));
     }
 
+    /**
+     * Gets the clip data in the primary clipboard.
+     * Null returns when having no clip data.
+     *
+     * @return the clip in the primary clipboard or null.
+     */
+    @Nullable
+    public static ClipData getClipData() {
+        ClipboardManager manager = getClipboardManager();
+        if (!manager.hasPrimaryClip()) return null;
+        return manager.getPrimaryClip();
+    }
+
+    /**
+     * Sets the primary clipboard to the specific clip data.
+     *
+     * @param clipData the specific clip data
+     * @throws NullPointerException if the {@code clipData} is null
+     */
+    public static void setClipData(@NonNull ClipData clipData) {
+        Preconditions.requireNonNull(clipData);
+        ClipboardManager manager = getClipboardManager();
+        manager.setPrimaryClip(clipData);
+    }
+
+    /**
+     * Clears the primary clipboard.
+     *
+     * @see ClipboardManager#clearPrimaryClip()
+     */
     @RequiresApi(api = Build.VERSION_CODES.P)
     public static void clear() {
         ClipboardManager manager = getClipboardManager();

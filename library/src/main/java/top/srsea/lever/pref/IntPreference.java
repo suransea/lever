@@ -18,6 +18,12 @@ package top.srsea.lever.pref;
 
 import android.annotation.SuppressLint;
 
+/**
+ * Integer preference.
+ *
+ * @author sea
+ * @see Preference
+ */
 public class IntPreference extends Preference<Integer> {
 
     public IntPreference(String key, Integer defaultValue) {

@@ -18,6 +18,12 @@ package top.srsea.lever.pref;
 
 import android.annotation.SuppressLint;
 
+/**
+ * Float preference.
+ *
+ * @author sea
+ * @see Preference
+ */
 public class FloatPreference extends Preference<Float> {
 
     public FloatPreference(String key, Float defaultValue) {

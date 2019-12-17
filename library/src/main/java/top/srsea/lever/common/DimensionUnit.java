@@ -19,7 +19,19 @@ package top.srsea.lever.common;
 import android.util.TypedValue;
 import top.srsea.lever.Lever;
 
+/**
+ * A {@code DimenUnit} represents the elements and font sizes in the android UI.
+ *
+ * @author sea
+ * @see DimensionUnit#DP
+ * @see DimensionUnit#PX
+ * @see DimensionUnit#SP
+ */
 public enum DimensionUnit {
+
+    /**
+     * Device independent pixel.
+     */
     DP {
         public float toPx(float value) {
             return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value,
@@ -34,10 +46,14 @@ public enum DimensionUnit {
             return PX.toSp(toPx(value));
         }
 
-        public float convert(float value, DimensionUnit unit){
+        public float convert(float value, DimensionUnit unit) {
             return unit.toDp(value);
         }
     },
+
+    /**
+     * Scale-independent pixel.
+     */
     SP {
         public float toPx(float value) {
             return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, value,
@@ -45,17 +61,21 @@ public enum DimensionUnit {
         }
 
         public float toDp(float value) {
-            return PX.toSp(toPx(value));
+            return PX.toDp(toPx(value));
         }
 
         public float toSp(float value) {
             return value;
         }
 
-        public float convert(float value, DimensionUnit unit){
+        public float convert(float value, DimensionUnit unit) {
             return unit.toSp(value);
         }
     },
+
+    /**
+     * Pixel.
+     */
     PX {
         public float toPx(float value) {
             return value;
@@ -69,24 +89,49 @@ public enum DimensionUnit {
             return value / Lever.getContext().getResources().getDisplayMetrics().scaledDensity;
         }
 
-        public float convert(float value, DimensionUnit unit){
+        public float convert(float value, DimensionUnit unit) {
             return unit.toPx(value);
         }
     };
 
+    /**
+     * Converts the given dimension in this unit to px.
+     *
+     * @param value the dimension in this unit
+     * @return the converted dimension
+     */
     public float toPx(float value) {
         throw new AbstractMethodError();
     }
 
+    /**
+     * Converts the given dimension in this unit to dp.
+     *
+     * @param value the dimension in this unit
+     * @return the converted dimension
+     */
     public float toDp(float value) {
         throw new AbstractMethodError();
     }
 
+    /**
+     * Converts the given dimension in this unit to sp.
+     *
+     * @param value the dimension in this unit
+     * @return the converted dimension
+     */
     public float toSp(float value) {
         throw new AbstractMethodError();
     }
 
-    public float convert(float value, DimensionUnit unit){
+    /**
+     * Converts the given dimension in the given unit to this unit.
+     *
+     * @param value the dimension in the given {@code unit}
+     * @param unit  the unit of the {@code value} argument
+     * @return the converted dimension in this unit
+     */
+    public float convert(float value, DimensionUnit unit) {
         throw new AbstractMethodError();
     }
 }

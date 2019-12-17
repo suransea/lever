@@ -22,15 +22,16 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
-import androidx.annotation.Nullable;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import top.srsea.lever.Lever;
-import top.srsea.torque.common.IOUtils;
+import top.srsea.torque.common.IOHelper;
+import top.srsea.torque.common.Preconditions;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,16 +39,24 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.Callable;
 
+/**
+ * Utilities for Media.
+ *
+ * @author sea
+ */
 public class MediaHelper {
+    private MediaHelper() {
+    }
 
     /**
-     * 获取MimeType
-     * 对于Content URI使用{@link android.content.ContentResolver#getType(Uri)}获取
-     * 其他URI使用path中的扩展名获取
-     * 不使用{@link android.media.MediaMetadataRetriever}
+     * Return the MIME type for the given uri.
+     * For content URIs, use {@link ContentResolver#getType(Uri)},
+     * others obtain from paths.
      *
-     * @param uri 目标Uri
-     * @return mimeType, or empty
+     * <p>Don't read metadata.
+     *
+     * @param uri URI to obtain MIME type
+     * @return the MIME type string, or null
      */
     @Nullable
     public static String obtainMimeType(Uri uri) {
@@ -58,10 +67,10 @@ public class MediaHelper {
     }
 
     /**
-     * 从path中获取MimeType
+     * Return the MIME type for the given path.
      *
-     * @param path A uri or file path
-     * @return mimeType, null when no extension name or cannot find a match
+     * @param path a path from URI or file
+     * @return the MIME type string, null when no extension name or cannot find a match
      */
     @Nullable
     public static String obtainMimeType(String path) {
@@ -69,6 +78,15 @@ public class MediaHelper {
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
     }
 
+    /**
+     * Inserts bitmap to media store.
+     *
+     * @param bitmap  source bitmap
+     * @param name    display name
+     * @param format  compress format
+     * @param quality compress quality
+     * @return the observable content URI in the media store
+     */
     public static Single<Uri> insertToMediaStore(final Bitmap bitmap, final String name, final Bitmap.CompressFormat format, final int quality) {
         return Single.fromCallable(new Callable<Uri>() {
             @Override
@@ -81,7 +99,7 @@ public class MediaHelper {
                 Uri uri = newMediaUri(collection, name, mimeType);
                 ContentResolver resolver = Lever.getContext().getContentResolver();
                 OutputStream outputStream = resolver.openOutputStream(uri);
-                if (outputStream == null) throw new NullPointerException();
+                Preconditions.requireNonNull(outputStream);
                 bitmap.compress(format, quality, outputStream);
                 outputStream.close();
                 if (Build.VERSION.SDK_INT >= 29) {
@@ -94,25 +112,39 @@ public class MediaHelper {
         });
     }
 
+    /**
+     * Inserts the media file to media store.
+     * The file will be copied to the corresponding bucket.
+     *
+     * @param file the file to insert
+     * @return an observable content URI in media store
+     */
     public static Single<Uri> insertToMediaStore(final File file) {
         return Single.just(file)
                 .flatMap(new Function<File, SingleSource<Uri>>() {
                     @Override
                     public SingleSource<Uri> apply(File file) throws Exception {
                         final InputStream stream = new FileInputStream(file);
-                        String extension = MimeTypeMap.getFileExtensionFromUrl(file.getAbsolutePath());
-                        final String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+                        final String mimeType = obtainMimeType(file.getAbsolutePath());
                         return insertToMediaStore(stream, file.getName(), mimeType)
                                 .doOnSuccess(new Consumer<Uri>() {
                                     @Override
                                     public void accept(Uri uri) {
-                                        IOUtils.close(stream);
+                                        IOHelper.close(stream);
                                     }
                                 });
                     }
                 });
     }
 
+    /**
+     * Inserts the data of stream to media store.
+     *
+     * @param stream   source
+     * @param name     display name
+     * @param mimeType the MIME type of data
+     * @return an observable content URI in media store
+     */
     public static Single<Uri> insertToMediaStore(InputStream stream, String name, String mimeType) {
         boolean externalMounted = StorageHelper.isExternalMounted();
         Uri collection;
@@ -137,6 +169,15 @@ public class MediaHelper {
         return insertToMediaStore(stream, name, collection, mimeType);
     }
 
+    /**
+     * Inserts the data of stream to media store, using the specific collection.
+     *
+     * @param stream     source
+     * @param name       display name
+     * @param collection the specific collection
+     * @param mimeType   the MIME type of data
+     * @return an observable content URI in media store
+     */
     public static Single<Uri> insertToMediaStore(final InputStream stream, final String name, final Uri collection, final String mimeType) {
         return Single.fromCallable(new Callable<Uri>() {
             @Override
@@ -145,8 +186,8 @@ public class MediaHelper {
                 ContentResolver resolver = Lever.getContext().getContentResolver();
                 OutputStream outputStream = resolver.openOutputStream(uri);
                 if (outputStream == null) throw new NullPointerException();
-                IOUtils.transfer(stream, outputStream);
-                IOUtils.close(outputStream);
+                IOHelper.transfer(stream, outputStream);
+                IOHelper.close(outputStream);
                 if (Build.VERSION.SDK_INT >= 29) {
                     ContentValues values = new ContentValues();
                     values.put(MediaStore.MediaColumns.IS_PENDING, 0);
@@ -157,6 +198,22 @@ public class MediaHelper {
         });
     }
 
+    /**
+     * Inserts a record in media store and returns its URI.
+     * If the platform API level is greater or equal to 29, the record will be marked as "pending",
+     * you need clear it after data written, like:
+     * <pre>
+     * ContentValues values = new ContentValues();
+     * values.put(MediaStore.MediaColumns.IS_PENDING, 0);
+     * resolver.update(uri, values, null, null);
+     * </pre>
+     *
+     * @param collection  the specific collection
+     * @param displayName the display name required by media store
+     * @param mimeType    the MIME type of this record
+     * @return new content URI of this record
+     * @see MediaStore.MediaColumns#IS_PENDING
+     */
     public static Uri newMediaUri(Uri collection, String displayName, String mimeType) {
         ContentValues values = new ContentValues();
         values.put(MediaStore.MediaColumns.DISPLAY_NAME, displayName);

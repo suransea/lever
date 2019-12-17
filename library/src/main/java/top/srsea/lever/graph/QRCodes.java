@@ -22,12 +22,29 @@ import com.google.zxing.*;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
 
+/**
+ * Utilities for QR codes.
+ *
+ * @author sea
+ */
 public class QRCodes {
 
+    /**
+     * Creates a QRCode with the specific content.
+     *
+     * @param content the specific content
+     * @return a QRCode object
+     */
     public static QRCode from(String content) {
         return new QRCode(content);
     }
 
+    /**
+     * Creates a QRCode read from the specific bitmap.
+     *
+     * @param bitmap the QR code bitmap
+     * @return a QRCode object
+     */
     public static QRCode from(Bitmap bitmap) {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
@@ -49,6 +66,14 @@ public class QRCodes {
         return new QRCode("");
     }
 
+    /**
+     * Returns a bitmap with the logo from the source bitmap.
+     * The logo width is one-fifth of the source bitmap.
+     *
+     * @param src  source bitmap
+     * @param logo logo bitmap
+     * @return a bitmap with the logo from the source bitmap, null when source bitmap is null
+     */
     public static Bitmap addLogo(Bitmap src, Bitmap logo) {
         if (src == null) return null;
         if (logo == null) return src;
@@ -59,7 +84,7 @@ public class QRCodes {
         if (srcWidth == 0 || srcHeight == 0) return null;
         if (logoWidth == 0 || logoHeight == 0) return src;
         float scaleFactor = srcWidth * 1.0f / 5 / logoWidth;
-        Bitmap bitmap = src.copy(src.getConfig(), true);
+        Bitmap bitmap = src.copy(src.getConfig(), true); //copy a mutable bitmap for drawing
         Canvas canvas = new Canvas(bitmap);
         canvas.scale(scaleFactor, scaleFactor, srcWidth / 2f, srcHeight / 2f);
         canvas.drawBitmap(logo, (srcWidth - logoWidth) / 2f, (srcHeight - logoHeight) / 2f, null);

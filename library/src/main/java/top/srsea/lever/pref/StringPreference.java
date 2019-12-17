@@ -18,6 +18,12 @@ package top.srsea.lever.pref;
 
 import android.annotation.SuppressLint;
 
+/**
+ * String preference.
+ *
+ * @author sea
+ * @see Preference
+ */
 public class StringPreference extends Preference<String> {
 
     public StringPreference(String key, String defaultValue) {

@@ -20,6 +20,12 @@ import android.annotation.SuppressLint;
 
 import java.util.Set;
 
+/**
+ * String set preference.
+ *
+ * @author sea
+ * @see Preference
+ */
 public class StringSetPreference extends Preference<Set<String>> {
 
     public StringSetPreference(String key, Set<String> defaultValue) {

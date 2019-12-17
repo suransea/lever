@@ -18,37 +18,57 @@ package top.srsea.lever.graph;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
-
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import top.srsea.lever.common.DimensionUnit;
 
 import java.util.HashMap;
 
-import androidx.annotation.NonNull;
-
+/**
+ * A QR code object for building QR code bitmap.
+ *
+ * @author sea
+ */
 public class QRCode {
+
+    /**
+     * Content of this QR code.
+     */
     private final String content;
+
+    // config for zxing
     private int colorPrimary = Color.BLACK;
     private int colorBackground = Color.WHITE;
     private int height = 100;
     private int width = 100;
     private int margin = 0;
     private String characterSet = "UTF-8";
-    private String errorCorrection = "L";
+    private String errorCorrection = "L"; //L, M, H
 
+    // config for bitmaps
+    private Bitmap.Config config = Bitmap.Config.ARGB_8888;
+    private Bitmap logo;
+
+    /**
+     * Constructs an instance with the specific content.
+     *
+     * @param content content in QR code
+     */
     public QRCode(String content) {
         this.content = content;
     }
 
+    /**
+     * Creates a bitmap from this QR code.
+     *
+     * @return a bitmap from this QR code
+     */
     public Bitmap toBitmap() {
-        return toBitmap(null);
-    }
-
-    public Bitmap toBitmap(Bitmap logo) {
         if (TextUtils.isEmpty(content)) return null;
         if (width < 0 || height < 0) return null;
         HashMap<EncodeHintType, Object> hints = new HashMap<>();
@@ -74,10 +94,12 @@ public class QRCode {
                     }
                 }
             }
-            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            Bitmap bitmap = Bitmap.createBitmap(width, height, config);
             bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
             if (logo != null) {
-                bitmap = QRCodes.addLogo(bitmap, logo);
+                Bitmap withLogo = QRCodes.addLogo(bitmap, logo);
+                if (!bitmap.isRecycled()) bitmap.recycle();
+                bitmap = withLogo;
             }
             return bitmap;
         } catch (WriterException e) {
@@ -107,8 +129,21 @@ public class QRCode {
     }
 
     public QRCode size(int size) {
-        width = (height = size);
+        return width(size).height(size);
+    }
+
+    public QRCode height(int height, DimensionUnit unit) {
+        this.height = (int) unit.toPx(height);
         return this;
+    }
+
+    public QRCode width(int width, DimensionUnit unit) {
+        this.width = (int) unit.toPx(width);
+        return this;
+    }
+
+    public QRCode size(int size, DimensionUnit unit) {
+        return size((int) unit.toPx(size));
     }
 
     public QRCode margin(int margin) {
@@ -121,11 +156,26 @@ public class QRCode {
         return this;
     }
 
-    public QRCode errorCorrection(String errorCorrection) {
+    public QRCode errorCorrection(String errorCorrection) { //L, M, H
         this.errorCorrection = errorCorrection;
         return this;
     }
 
+    public QRCode logo(Bitmap logo) {
+        this.logo = logo;
+        return this;
+    }
+
+    public QRCode config(Bitmap.Config config) {
+        this.config = config;
+        return this;
+    }
+
+    /**
+     * Gets the content of this QR code.
+     *
+     * @return the content of this QR code.
+     */
     @NonNull
     @Override
     public String toString() {
