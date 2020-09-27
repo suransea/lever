@@ -97,7 +97,7 @@ public class QRCode {
             Bitmap bitmap = Bitmap.createBitmap(width, height, config);
             bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
             if (logo != null) {
-                Bitmap withLogo = QRCodes.addLogo(bitmap, logo);
+                Bitmap withLogo = QRCodeHelper.addLogo(bitmap, logo);
                 if (!bitmap.isRecycled()) bitmap.recycle();
                 bitmap = withLogo;
             }

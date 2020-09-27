@@ -35,11 +35,11 @@ import java.lang.reflect.Method;
  *
  * @author sea
  */
-public class Notifications {
+public class NotificationHelper {
     private static final String CHECK_OP_NO_THROW = "checkOpNoThrow"; //method name
     private static final String OP_POST_NOTIFICATION = "OP_POST_NOTIFICATION"; //field name
 
-    private Notifications() {
+    private NotificationHelper() {
     }
 
     /**

@@ -30,15 +30,8 @@ import top.srsea.lever.Lever;
  *
  * @author sea
  */
-public class Packages {
-
-    // some common package names
-    public static final String WECHAT = "com.tencent.mm";
-    public static final String QQ = "com.tencent.mobileqq";
-    public static final String TAOBAO = "com.taobao.taobao";
-    public static final String ALIPAY = "com.eg.android.AlipayGphone";
-
-    private Packages() {
+public class PackageHelper {
+    private PackageHelper() {
     }
 
     /**

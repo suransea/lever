@@ -33,8 +33,8 @@ import top.srsea.torque.common.Preconditions;
  * @see Context#CLIPBOARD_SERVICE
  * @see ClipboardManager
  */
-public class Clipboards {
-    private Clipboards() {
+public class ClipboardHelper {
+    private ClipboardHelper() {
     }
 
     /**
