@@ -30,8 +30,8 @@ import android.view.WindowManager;
  * @author sea
  */
 public class StatusBarHelper {
-    private Window window; // the window of this activity
-    private View decorView; // the decor view of this activity
+    private final Window window; // the window of this activity
+    private final View decorView; // the decor view of this activity
 
     /**
      * Constructs an instance from an activity.
@@ -78,25 +78,47 @@ public class StatusBarHelper {
      * <p>If there is a navigation bar, and the platform API level is greater or equal to 26,
      * the navigation bar will also be switched.
      *
-     * @param dark to dark or light
+     * @param light to light or dark
      */
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public StatusBarHelper setBrightness(boolean dark) {
+    public StatusBarHelper setBrightness(boolean light) {
         int flag = decorView.getSystemUiVisibility();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (dark) {
+            if (light) {
                 flag |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
             } else {
                 flag &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
             }
         }
-        if (dark) {
+        if (light) {
             flag |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
         } else {
             flag &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
         }
         decorView.setSystemUiVisibility(flag);
         return this;
+    }
+
+    /**
+     * Switches the status bar to light.
+     *
+     * <p>If there is a navigation bar, and the platform API level is greater or equal to 26,
+     * the navigation bar will also be switched.
+     */
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public StatusBarHelper setLight() {
+        return setBrightness(true);
+    }
+
+    /**
+     * Switches the status bar to dark.
+     *
+     * <p>If there is a navigation bar, and the platform API level is greater or equal to 26,
+     * the navigation bar will also be switched.
+     */
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public StatusBarHelper setDark() {
+        return setBrightness(false);
     }
 
     /**

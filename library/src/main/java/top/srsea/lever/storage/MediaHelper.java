@@ -22,22 +22,24 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
-import io.reactivex.Single;
-import io.reactivex.SingleSource;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
-import top.srsea.lever.Lever;
-import top.srsea.torque.common.IOHelper;
-import top.srsea.torque.common.Preconditions;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.Callable;
+
+import io.reactivex.Single;
+import io.reactivex.SingleSource;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Function;
+import top.srsea.lever.Lever;
+import top.srsea.torque.common.IOHelper;
+import top.srsea.torque.common.Preconditions;
 
 /**
  * Utilities for Media.
@@ -53,7 +55,7 @@ public class MediaHelper {
      * For content URIs, use {@link ContentResolver#getType(Uri)},
      * others obtain from paths.
      *
-     * <p>Don't read metadata.
+     * <p>Won't read metadata.
      *
      * @param uri URI to obtain MIME type
      * @return the MIME type string, or null
@@ -123,13 +125,13 @@ public class MediaHelper {
         return Single.just(file)
                 .flatMap(new Function<File, SingleSource<Uri>>() {
                     @Override
-                    public SingleSource<Uri> apply(File file) throws Exception {
+                    public SingleSource<Uri> apply(@NonNull File file) throws Exception {
                         final InputStream stream = new FileInputStream(file);
                         final String mimeType = obtainMimeType(file.getAbsolutePath());
                         return insertToMediaStore(stream, file.getName(), mimeType)
-                                .doOnSuccess(new Consumer<Uri>() {
+                                .doAfterTerminate(new Action() {
                                     @Override
-                                    public void accept(Uri uri) {
+                                    public void run() {
                                         IOHelper.close(stream);
                                     }
                                 });

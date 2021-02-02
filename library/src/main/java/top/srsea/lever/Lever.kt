@@ -14,6 +14,7 @@ import java.io.Reader
 import kotlin.reflect.KProperty
 
 class ToastOption {
+    @Deprecated("useless, now ToastBuilder checks thread")
     var mainThread = false
     var duration = Toast.LENGTH_SHORT
     var margin = -1f to -1f
@@ -27,9 +28,6 @@ fun toast(content: String, option: ToastOption.() -> Unit = {}) {
     val builder = Toasts.of(content)
             .gravity(opt.gravity, opt.offset.first, opt.offset.second)
             .margin(opt.margin.first, opt.margin.second)
-    if (opt.mainThread) {
-        builder.mainThread()
-    }
     when (opt.duration) {
         Toast.LENGTH_SHORT -> builder.showShort()
         Toast.LENGTH_LONG -> builder.showLong()
@@ -61,3 +59,49 @@ inline fun <reified T> Gson.fromJson(json: JsonElement): T = fromJson(json, T::c
 inline fun <reified T> Gson.fromJson(json: Reader): T = fromJson(json, T::class.java)
 
 operator fun <T> Property<T>.getValue(thisRef: Any?, property: KProperty<*>): T = get()
+
+fun ignoreError(block: () -> Unit) {
+    try {
+        block()
+    } catch (ignored: Throwable) {
+    }
+}
+
+fun catchAndPrintError(block: () -> Unit) {
+    try {
+        block()
+    } catch (e: Throwable) {
+        e.printStackTrace()
+    }
+}
+
+typealias ErrorHandler = (Throwable) -> Unit
+
+fun catchAndHandleError(handler: ErrorHandler, block: () -> Unit) {
+    try {
+        block()
+    } catch (e: Throwable) {
+        handler(e)
+    }
+}
+
+fun <T> (() -> T).defaultOnError(default: T): T =
+        try {
+            this()
+        } catch (e: Throwable) {
+            default
+        }
+
+fun <T> (() -> T).elseOnError(default: () -> T): T =
+        try {
+            this()
+        } catch (e: Throwable) {
+            default()
+        }
+
+fun <T> (() -> T).nullOnError(): T? =
+        try {
+            this()
+        } catch (e: Throwable) {
+            null
+        }

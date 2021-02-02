@@ -21,6 +21,7 @@ import android.os.Looper;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
+
 import top.srsea.lever.Lever;
 
 /**
@@ -32,7 +33,6 @@ public class ToastBuilder {
     private String content = "";
     private View view;
     private int duration = Toast.LENGTH_SHORT;
-    private boolean mainThread = false;
 
     // value "-1" will be ignored when building toast
     private float hMargin = -1f;
@@ -132,9 +132,10 @@ public class ToastBuilder {
      * Marks this toast to be shown in the main thread.
      *
      * @return current toast
+     * @deprecated ToastBuilder#show() now checks thread
      */
+    @Deprecated
     public ToastBuilder mainThread() {
-        mainThread = true;
         return this;
     }
 
@@ -175,7 +176,7 @@ public class ToastBuilder {
      * @see Toast#show()
      */
     private void show() {
-        if (mainThread) {
+        if (Looper.getMainLooper().getThread() != Thread.currentThread()) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {

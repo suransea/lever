@@ -107,7 +107,7 @@ public class Bitmaps {
                 .download(url)
                 .map(new Function<ResponseBody, Bitmap>() {
                     @Override
-                    public Bitmap apply(ResponseBody responseBody) {
+                    public Bitmap apply(@NonNull ResponseBody responseBody) {
                         InputStream stream = responseBody.byteStream();
                         Bitmap bitmap = BitmapFactory.decodeStream(stream);
                         IOHelper.close(stream);

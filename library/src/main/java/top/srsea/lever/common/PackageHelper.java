@@ -23,6 +23,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
+
 import top.srsea.lever.Lever;
 
 /**
@@ -69,6 +70,12 @@ public class PackageHelper {
         Lever.getContext().startActivity(intent);
     }
 
+    /**
+     * Opens the detail settings page of this application.
+     */
+    public static void openAppDetailSetting() {
+        openAppDetailSetting(Lever.getContext().getPackageName());
+    }
 
     /**
      * Open the application corresponding to the package name.
@@ -82,13 +89,5 @@ public class PackageHelper {
         if (intent == null) return;
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
-    }
-
-
-    /**
-     * Opens the detail settings page of this application.
-     */
-    public static void openAppDetailSetting() {
-        openAppDetailSetting(Lever.getContext().getPackageName());
     }
 }

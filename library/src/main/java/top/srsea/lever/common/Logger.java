@@ -25,11 +25,12 @@ import android.util.Log;
  * @see Log
  */
 public class Logger {
+    public static final String GLOBAL_TAG = "global";
 
     /**
      * Tag for Android {@link Log}.
      */
-    private String tag;
+    private final String tag;
 
     /**
      * Constructs an instance with the specific tag.
@@ -58,7 +59,7 @@ public class Logger {
      * @return a Logger with the tag {@code "global"}
      */
     public static Logger getGlobal() {
-        return new Logger("global");
+        return new Logger(GLOBAL_TAG);
     }
 
     /**
