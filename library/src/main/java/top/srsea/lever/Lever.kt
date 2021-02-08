@@ -4,6 +4,7 @@ import android.support.annotation.StringRes
 import android.widget.Toast
 import com.google.gson.Gson
 import com.google.gson.JsonElement
+import com.google.gson.reflect.TypeToken
 import io.reactivex.disposables.Disposable
 import top.srsea.lever.common.DimensionUnit
 import top.srsea.lever.common.Res
@@ -52,11 +53,11 @@ val Int.dp get() = toFloat().dp
 
 val Int.sp get() = toFloat().sp
 
-inline fun <reified T> Gson.fromJson(json: String): T = fromJson(json, T::class.java)
+inline fun <reified T> Gson.fromJson(json: String): T = fromJson(json, object : TypeToken<T>() {}.type)
 
-inline fun <reified T> Gson.fromJson(json: JsonElement): T = fromJson(json, T::class.java)
+inline fun <reified T> Gson.fromJson(json: JsonElement): T = fromJson(json, object : TypeToken<T>() {}.type)
 
-inline fun <reified T> Gson.fromJson(json: Reader): T = fromJson(json, T::class.java)
+inline fun <reified T> Gson.fromJson(json: Reader): T = fromJson(json, object : TypeToken<T>() {}.type)
 
 operator fun <T> Property<T>.getValue(thisRef: Any?, property: KProperty<*>): T = get()
 

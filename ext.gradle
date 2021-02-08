@@ -6,8 +6,8 @@ ext {
     targetSdkVersion = 26
 
     //版本号
-    versionCode = 7
-    versionName = "1.3.1"
+    versionCode = 8
+    versionName = "1.3.2"
 
     //dependencies
     supportv4 = 'com.android.support:support-v4:28.0.0'
