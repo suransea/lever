@@ -7,7 +7,7 @@ ext {
 
     //版本号
     versionCode = 8
-    versionName = "1.3.2"
+    versionName = "1.4.0"
 
     //dependencies
     supportv4 = 'com.android.support:support-v4:28.0.0'

@@ -32,6 +32,12 @@ dependencies {
     implementation rootProject.ext.appcompat
     implementation rootProject.ext.zxing
     implementation rootProject.ext.torque
+    implementation rootProject.ext.okhttp
+    implementation rootProject.ext.retrofit
+    implementation rootProject.ext.gson
+    implementation rootProject.ext.retrofitRxjavaAdapter
+    implementation rootProject.ext.retrofitGsonConverter
+
     api rootProject.ext.rxjava
     api rootProject.ext.rxandroid
 }
