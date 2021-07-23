@@ -33,10 +33,10 @@ import io.reactivex.Single;
 import io.reactivex.functions.Function;
 import okhttp3.ResponseBody;
 import top.srsea.lever.Lever;
+import top.srsea.lever.network.DownloadService;
+import top.srsea.lever.network.RetrofitProvider;
 import top.srsea.torque.common.IOHelper;
 import top.srsea.torque.common.Preconditions;
-import top.srsea.torque.network.DownloadService;
-import top.srsea.torque.network.RetrofitProvider;
 
 /**
  * Bitmaps factory.

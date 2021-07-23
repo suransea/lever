@@ -46,8 +46,9 @@ public class DisposeBag extends ArrayList<WeakReference<Disposable>> {
      */
     public synchronized void release() {
         for (WeakReference<Disposable> item : this) {
-            if (item.get() == null || item.get().isDisposed()) continue;
-            item.get().dispose();
+            Disposable disposable = item.get();
+            if (disposable == null || disposable.isDisposed()) continue;
+            disposable.dispose();
         }
         clear();
     }
