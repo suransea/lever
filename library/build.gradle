@@ -28,7 +28,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation rootProject.ext.kotlin
-    implementation rootProject.ext.supportv4
+    implementation rootProject.ext.annotation
     implementation rootProject.ext.appcompat
     implementation rootProject.ext.zxing
     implementation rootProject.ext.torque
@@ -39,5 +39,4 @@ dependencies {
     implementation rootProject.ext.retrofitGsonConverter
 
     api rootProject.ext.rxjava
-    api rootProject.ext.rxandroid
 }

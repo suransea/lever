@@ -16,8 +16,10 @@
 
 package top.srsea.lever.ui;
 
-import android.support.annotation.StringRes;
 import android.view.View;
+
+import androidx.annotation.StringRes;
+
 import top.srsea.lever.common.Res;
 
 /**

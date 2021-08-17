@@ -1,7 +1,7 @@
 package top.srsea.lever
 
-import android.support.annotation.StringRes
 import android.widget.Toast
+import androidx.annotation.StringRes
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken

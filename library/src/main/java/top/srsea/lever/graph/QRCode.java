@@ -18,16 +18,19 @@ package top.srsea.lever.graph;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import top.srsea.lever.common.DimensionUnit;
 
 import java.util.HashMap;
+
+import top.srsea.lever.common.DimensionUnit;
 
 /**
  * A QR code object for building QR code bitmap.
