@@ -33,41 +33,7 @@ public class RetrofitProvider {
      */
     private static final String BASE_URL = "http://localhost/";
 
-    /**
-     * Default OkHttpClient instance
-     */
-    private final OkHttpClient client;
-
-    /**
-     * Constructs an instance
-     */
     private RetrofitProvider() {
-        client = new OkHttpClient.Builder().build();
-    }
-
-    /**
-     * Returns a new Retrofit with default settings.
-     *
-     * @return new retrofit instance
-     */
-    public static Retrofit get() {
-        return newRetrofitBuilder()
-                .client(Singleton.INSTANCE.client)
-                .baseUrl(BASE_URL)
-                .build();
-    }
-
-    /**
-     * Returns a new Retrofit with the specific base url.
-     *
-     * @param baseUrl the specified base url
-     * @return new retrofit instance
-     */
-    public static Retrofit get(String baseUrl) {
-        return newRetrofitBuilder()
-                .client(Singleton.INSTANCE.client)
-                .baseUrl(baseUrl)
-                .build();
     }
 
     /**
@@ -106,16 +72,5 @@ public class RetrofitProvider {
         return new Retrofit.Builder()
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create());
-    }
-
-    /**
-     * The holder of {@code RetrofitProvider}
-     */
-    private static class Singleton {
-
-        /**
-         * Single {@code RetrofitProvider} instance.
-         */
-        private static final RetrofitProvider INSTANCE = new RetrofitProvider();
     }
 }

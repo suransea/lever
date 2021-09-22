@@ -16,21 +16,31 @@
 
 package top.srsea.lever.network;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLDecoder;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
-import okhttp3.*;
+import okhttp3.Headers;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import top.srsea.torque.common.IOHelper;
 import top.srsea.torque.common.Preconditions;
 import top.srsea.torque.common.StringHelper;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.*;
-import java.net.URI;
-import java.net.URLDecoder;
 
 /**
  * A download task, with observable progress.
@@ -188,6 +198,9 @@ public class DownloadTask {
      * @return observable file
      */
     public Observable<File> start() {
+        if (StringHelper.isBlank(url)) {
+            return Observable.error(new IllegalArgumentException("url cannot be blank."));
+        }
         return RetrofitProvider.get(newOkHttpClient())
                 .create(DownloadService.class)
                 .download(url)
@@ -280,12 +293,8 @@ public class DownloadTask {
          * Builds a {@code DownloadTask} with this builder.
          *
          * @return {@code DownloadTask} instance
-         * @throws IllegalArgumentException if url is blank
          */
         public DownloadTask build() {
-            if (StringHelper.isBlank(url)) {
-                throw new IllegalArgumentException("url cannot be blank.");
-            }
             if (savePath == null) {
                 savePath = new File(System.getenv("HOME"), "Downloads");
             }

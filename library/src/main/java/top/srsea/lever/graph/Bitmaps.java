@@ -32,6 +32,7 @@ import java.util.concurrent.Callable;
 
 import io.reactivex.Single;
 import io.reactivex.functions.Function;
+import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import top.srsea.lever.Lever;
 import top.srsea.lever.network.DownloadService;
@@ -74,7 +75,7 @@ public class Bitmaps {
 
     /**
      * Decodes a bitmap from a content, resource or file URI.
-     * For a remote URI, use {@link Bitmaps#fromUrl(String)}.
+     * For a http(s) URI, use {@link Bitmaps#fromUrl}.
      *
      * @param uri content, resource or file URI
      * @return an observable bitmap from URI
@@ -99,11 +100,12 @@ public class Bitmaps {
     /**
      * Fetches a bitmap from the URL.
      *
-     * @param url the URL to image file
+     * @param url    the URL to image file
+     * @param client okhttp client
      * @return an observable bitmap from the URL
      */
-    public static Single<Bitmap> fromUrl(final String url) {
-        return Single.fromObservable(RetrofitProvider.get()
+    public static Single<Bitmap> fromUrl(final String url, OkHttpClient client) {
+        return RetrofitProvider.get(client)
                 .create(DownloadService.class)
                 .download(url)
                 .map(new Function<ResponseBody, Bitmap>() {
@@ -114,6 +116,17 @@ public class Bitmaps {
                         IOHelper.close(stream);
                         return bitmap;
                     }
-                }));
+                })
+                .firstOrError();
+    }
+
+    /**
+     * Fetches a bitmap from the URL.
+     *
+     * @param url the URL to image file
+     * @return an observable bitmap from the URL
+     */
+    public static Single<Bitmap> fromUrl(final String url) {
+        return fromUrl(url, new OkHttpClient());
     }
 }

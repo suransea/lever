@@ -23,6 +23,8 @@ import androidx.annotation.NonNull;
 
 import java.lang.ref.WeakReference;
 
+import top.srsea.torque.common.Preconditions;
+
 /**
  * A context holder for all utilities of this package.
  *
@@ -33,7 +35,7 @@ public class Lever {
     /**
      * An application context weak reference.
      */
-    private WeakReference<Context> contextWeakReference;
+    private static WeakReference<Context> contextWeakReference;
 
     /**
      * Initializes with a context.
@@ -43,7 +45,8 @@ public class Lever {
      * @param context any valid context
      */
     public static void init(@NonNull Context context) {
-        getInstance().contextWeakReference = new WeakReference<>(context.getApplicationContext());
+        Preconditions.requireNonNull(context);
+        contextWeakReference = new WeakReference<>(context.getApplicationContext());
     }
 
     /**
@@ -52,16 +55,7 @@ public class Lever {
      * @return {@code true} if initialized
      */
     public static boolean hasInitialized() {
-        return getInstance().contextWeakReference != null;
-    }
-
-    /**
-     * Gets instance of lever.
-     *
-     * @return lever instance
-     */
-    public static Lever getInstance() {
-        return Singleton.INSTANCE;
+        return contextWeakReference != null;
     }
 
     /**
@@ -71,10 +65,10 @@ public class Lever {
      * @throws RuntimeException if not initialized yet
      */
     public static Context getContext() {
-        if (getInstance().contextWeakReference == null) {
+        if (contextWeakReference == null) {
             throw new RuntimeException("Please init lever before use it.");
         }
-        return getInstance().contextWeakReference.get();
+        return contextWeakReference.get();
     }
 
     /**
@@ -86,11 +80,5 @@ public class Lever {
      */
     public static Application getApplication() {
         return (Application) getContext();
-    }
-
-    private static class Singleton {
-
-        // singleton for Lever
-        private static final Lever INSTANCE = new Lever();
     }
 }

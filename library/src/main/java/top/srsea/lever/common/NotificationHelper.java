@@ -16,19 +16,16 @@
 
 package top.srsea.lever.common;
 
-import android.app.AppOpsManager;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
-import top.srsea.lever.Lever;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import androidx.core.app.NotificationManagerCompat;
+
+import top.srsea.lever.Lever;
 
 /**
  * Utilities for android notifications.
@@ -36,9 +33,6 @@ import java.lang.reflect.Method;
  * @author sea
  */
 public class NotificationHelper {
-    private static final String CHECK_OP_NO_THROW = "checkOpNoThrow"; //method name
-    private static final String OP_POST_NOTIFICATION = "OP_POST_NOTIFICATION"; //field name
-
     private NotificationHelper() {
     }
 
@@ -46,35 +40,11 @@ public class NotificationHelper {
      * Determines if there is notification permission.
      *
      * @return there is notification permission or not
+     * @deprecated use {@link NotificationManagerCompat#areNotificationsEnabled} instead.
      */
+    @Deprecated
     public static boolean isPermissionGranted() {
-        Context context = Lever.getContext();
-        NotificationManager notificationManager = (NotificationManager) context
-                .getSystemService(Context.NOTIFICATION_SERVICE);
-        if (notificationManager == null) return true;
-        if (Build.VERSION.SDK_INT >= 24) {
-            return notificationManager.areNotificationsEnabled();
-        } else if (Build.VERSION.SDK_INT >= 19) {
-            AppOpsManager appOps =
-                    (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
-            ApplicationInfo appInfo = context.getApplicationInfo();
-            String pkg = context.getApplicationContext().getPackageName();
-            int uid = appInfo.uid;
-            try {
-                Class<?> appOpsClass = Class.forName(AppOpsManager.class.getName());
-                Method checkOpNoThrowMethod = appOpsClass.getMethod(CHECK_OP_NO_THROW, Integer.TYPE,
-                        Integer.TYPE, String.class);
-                Field opPostNotificationValue = appOpsClass.getDeclaredField(OP_POST_NOTIFICATION);
-                int value = (int) opPostNotificationValue.get(Integer.class);
-                return ((int) checkOpNoThrowMethod.invoke(appOps, value, uid, pkg)
-                        == AppOpsManager.MODE_ALLOWED);
-            } catch (ClassNotFoundException | NoSuchMethodException | NoSuchFieldException
-                    | InvocationTargetException | IllegalAccessException | RuntimeException e) {
-                return true;
-            }
-        } else {
-            return true;
-        }
+        return NotificationManagerCompat.from(Lever.getContext()).areNotificationsEnabled();
     }
 
 

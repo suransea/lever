@@ -14,7 +14,7 @@ fun logger(tag: String = Logger.GLOBAL_TAG): (priority: Int) -> (msg: String) ->
 /**
  * Create a new logger which the class name as tag.
  */
-fun Any.logger(priority: Int) = logger(tag = this::class.java.simpleName)(priority)
+fun Any.logger(priority: Int) = logger(tag = javaClass.simpleName)(priority)
 
 fun Any.debugLogger() = logger(Log.DEBUG)
 
