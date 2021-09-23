@@ -25,7 +25,6 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.RGBLuminanceSource;
-import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
@@ -176,10 +175,12 @@ public class QRCode {
             return this;
         }
 
-        public Bitmap result() {
-            if (TextUtils.isEmpty(content)) return null;
-            if (width < 0 || height < 0) return null;
-            HashMap<EncodeHintType, Object> hints = new HashMap<>();
+        public Result<Bitmap> result() {
+            if (content == null) return Result.failure(new NullPointerException("content"));
+            if (width < 0 || height < 0) {
+                return Result.failure(new IllegalArgumentException("width or height must be positive."));
+            }
+            final HashMap<EncodeHintType, Object> hints = new HashMap<>();
             if (!TextUtils.isEmpty(characterSet)) {
                 hints.put(EncodeHintType.CHARACTER_SET, characterSet);
             }
@@ -189,31 +190,27 @@ public class QRCode {
             if (margin >= 0) {
                 hints.put(EncodeHintType.MARGIN, String.valueOf(margin));
             }
-            try {
-                BitMatrix bitMatrix = new QRCodeWriter()
-                        .encode(content, BarcodeFormat.QR_CODE, width, height, hints);
-                int[] pixels = new int[width * height];
-                for (int y = 0; y < height; y++) {
-                    for (int x = 0; x < width; x++) {
-                        if (bitMatrix.get(x, y)) {
-                            pixels[y * width + x] = colorPrimary;
-                        } else {
-                            pixels[y * width + x] = colorBackground;
+            return Result.from(new Callable<Bitmap>() {
+                @Override
+                public Bitmap call() throws Exception {
+                    BitMatrix bitMatrix = new QRCodeWriter()
+                            .encode(content, BarcodeFormat.QR_CODE, width, height, hints);
+                    int[] pixels = new int[width * height];
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            pixels[y * width + x] = bitMatrix.get(x, y) ? colorPrimary : colorBackground;
                         }
                     }
+                    Bitmap bitmap = Bitmap.createBitmap(width, height, config);
+                    bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+                    if (logo != null) {
+                        Bitmap withLogo = QRCode.withLogo(bitmap, logo);
+                        if (!bitmap.isRecycled()) bitmap.recycle();
+                        bitmap = withLogo;
+                    }
+                    return bitmap;
                 }
-                Bitmap bitmap = Bitmap.createBitmap(width, height, config);
-                bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-                if (logo != null) {
-                    Bitmap withLogo = withLogo(bitmap, logo);
-                    if (!bitmap.isRecycled()) bitmap.recycle();
-                    bitmap = withLogo;
-                }
-                return bitmap;
-            } catch (WriterException e) {
-                e.printStackTrace();
-                return null;
-            }
+            });
         }
     }
 }
