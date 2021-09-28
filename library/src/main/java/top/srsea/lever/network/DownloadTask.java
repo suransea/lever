@@ -16,6 +16,8 @@
 
 package top.srsea.lever.network;
 
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,6 +26,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.util.UUID;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -116,7 +119,6 @@ public class DownloadTask {
      *
      * @param response response to obtain a filename.
      * @return filename
-     * @throws IllegalArgumentException cannot obtain a filename from the response
      */
     private String obtainFilename(Response response) {
         String filename = obtainFilename(response.headers());
@@ -124,7 +126,8 @@ public class DownloadTask {
             filename = obtainFilename(response.request().url().uri());
         }
         if (StringHelper.isBlank(filename)) {
-            throw new IllegalArgumentException("cannot obtain a filename.");
+            Log.w("DownloadTask", "Cannot obtain a filename, use UUID instead.");
+            filename = UUID.randomUUID().toString();
         }
         return filename;
     }

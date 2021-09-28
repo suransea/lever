@@ -205,7 +205,7 @@ public class QRCode {
                     bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
                     if (logo != null) {
                         Bitmap withLogo = QRCode.withLogo(bitmap, logo);
-                        if (!bitmap.isRecycled()) bitmap.recycle();
+                        bitmap.recycle();
                         bitmap = withLogo;
                     }
                     return bitmap;
