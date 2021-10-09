@@ -53,13 +53,18 @@ val Int.dp get() = toFloat().dp
 
 val Int.sp get() = toFloat().sp
 
-inline fun <reified T> Gson.fromJson(json: String): T = fromJson(json, object : TypeToken<T>() {}.type)
+inline fun <reified T> Gson.fromJson(json: String): T =
+    fromJson(json, object : TypeToken<T>() {}.type)
 
-inline fun <reified T> Gson.fromJson(json: JsonElement): T = fromJson(json, object : TypeToken<T>() {}.type)
+inline fun <reified T> Gson.fromJson(json: JsonElement): T =
+    fromJson(json, object : TypeToken<T>() {}.type)
 
-inline fun <reified T> Gson.fromJson(json: Reader): T = fromJson(json, object : TypeToken<T>() {}.type)
+inline fun <reified T> Gson.fromJson(json: Reader): T =
+    fromJson(json, object : TypeToken<T>() {}.type)
 
 operator fun <T> Property<T>.getValue(thisRef: Any?, property: KProperty<*>): T = get()
+
+operator fun <T> Property<T>.setValue(thisRef: Any?, property: KProperty<*>, value: T) = set(value)
 
 fun ignoreError(block: () -> Unit) {
     try {
