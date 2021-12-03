@@ -16,51 +16,277 @@
 
 package top.srsea.lever.rx;
 
-import io.reactivex.disposables.Disposable;
-
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.List;
+
+import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.Nullable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.disposables.DisposableContainer;
+import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.internal.util.OpenHashSet;
+
 
 /**
- * Containers of disposables.
- *
- * @author sea
- * @see ArrayList
+ * A disposable container that can hold onto multiple other {@link Disposable}s and
+ * offers <em>O(1)</em> time complexity for {@link #add(Disposable)}, {@link #remove(Disposable)} and {@link #delete(Disposable)}
+ * operations.
  */
-public class DisposeBag extends ArrayList<WeakReference<Disposable>> {
+public final class DisposeBag implements Disposable, DisposableContainer {
+
+    OpenHashSet<Disposable> resources;
+
+    volatile boolean disposed;
 
     /**
-     * Adds weak reference of the disposable to this container.
-     *
-     * @param disposable the disposable to add
-     * @return true (as specified by {@link ArrayList#add}),
-     * false when disposable is null or disposable has been disposed.
+     * Creates an empty {@code DisposeBag}.
      */
-    public boolean add(Disposable disposable) {
-        if (disposable == null || disposable.isDisposed()) return false;
-        return super.add(new WeakReference<>(disposable));
+    public DisposeBag() {
     }
 
     /**
-     * Disposes all disposables.
+     * Creates a {@code DisposeBag} with the given array of initial {@link Disposable} elements.
+     *
+     * @param disposables the array of {@code Disposable}s to start with
+     * @throws NullPointerException if {@code disposables} or any of its array items is {@code null}
      */
-    public synchronized void release() {
-        for (WeakReference<Disposable> item : this) {
-            Disposable disposable = item.get();
-            if (disposable == null || disposable.isDisposed()) continue;
-            disposable.dispose();
+    public DisposeBag(@NonNull Disposable... disposables) {
+        ObjectHelper.requireNonNull(disposables, "disposables is null");
+        this.resources = new OpenHashSet<>(disposables.length + 1);
+        for (Disposable d : disposables) {
+            ObjectHelper.requireNonNull(d, "A Disposable in the disposables array is null");
+            this.resources.add(d);
         }
+    }
+
+    /**
+     * Creates a {@code DisposeBag} with the given {@link Iterable} sequence of initial {@link Disposable} elements.
+     *
+     * @param disposables the {@code Iterable} sequence of {@code Disposable} to start with
+     * @throws NullPointerException if {@code disposables} or any of its items is {@code null}
+     */
+    public DisposeBag(@NonNull Iterable<? extends Disposable> disposables) {
+        ObjectHelper.requireNonNull(disposables, "disposables is null");
+        this.resources = new OpenHashSet<>();
+        for (Disposable d : disposables) {
+            ObjectHelper.requireNonNull(d, "A Disposable item in the disposables sequence is null");
+            this.resources.add(d);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        if (disposed) {
+            return;
+        }
+        OpenHashSet<Disposable> set;
+        synchronized (this) {
+            if (disposed) {
+                return;
+            }
+            disposed = true;
+            set = resources;
+            resources = null;
+        }
+
+        dispose(set);
+    }
+
+    @Override
+    public boolean isDisposed() {
+        return disposed;
+    }
+
+    /**
+     * Adds a {@link Disposable} to this container or disposes it if the
+     * container has been disposed.
+     *
+     * @param disposable the {@code Disposable} to add, not {@code null}
+     * @return {@code true} if successful, {@code false} if this container has been disposed
+     * @throws NullPointerException if {@code disposable} is {@code null}
+     */
+    @Override
+    public boolean add(@NonNull Disposable disposable) {
+        ObjectHelper.requireNonNull(disposable, "disposable is null");
+        if (!disposed) {
+            synchronized (this) {
+                if (!disposed) {
+                    OpenHashSet<Disposable> set = resources;
+                    if (set == null) {
+                        set = new OpenHashSet<>();
+                        resources = set;
+                    }
+                    set.add(disposable);
+                    return true;
+                }
+            }
+        }
+        disposable.dispose();
+        return false;
+    }
+
+    /**
+     * Atomically adds the given array of {@link Disposable}s to the container or
+     * disposes them all if the container has been disposed.
+     *
+     * @param disposables the array of {@code Disposable}s
+     * @return {@code true} if the operation was successful, {@code false} if the container has been disposed
+     * @throws NullPointerException if {@code disposables} or any of its array items is {@code null}
+     */
+    public boolean addAll(@NonNull Disposable... disposables) {
+        ObjectHelper.requireNonNull(disposables, "disposables is null");
+        if (!disposed) {
+            synchronized (this) {
+                if (!disposed) {
+                    OpenHashSet<Disposable> set = resources;
+                    if (set == null) {
+                        set = new OpenHashSet<>(disposables.length + 1);
+                        resources = set;
+                    }
+                    for (Disposable d : disposables) {
+                        ObjectHelper.requireNonNull(d, "A Disposable in the disposables array is null");
+                        set.add(d);
+                    }
+                    return true;
+                }
+            }
+        }
+        for (Disposable d : disposables) {
+            d.dispose();
+        }
+        return false;
+    }
+
+    /**
+     * Removes and disposes the given {@link Disposable} if it is part of this
+     * container.
+     *
+     * @param disposable the disposable to remove and dispose, not {@code null}
+     * @return {@code true} if the operation was successful
+     * @throws NullPointerException if {@code disposable} is {@code null}
+     */
+    @Override
+    public boolean remove(@NonNull Disposable disposable) {
+        if (delete(disposable)) {
+            disposable.dispose();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Removes (but does not dispose) the given {@link Disposable} if it is part of this
+     * container.
+     *
+     * @param disposable the disposable to remove, not {@code null}
+     * @return {@code true} if the operation was successful
+     * @throws NullPointerException if {@code disposable} is {@code null}
+     */
+    @Override
+    public boolean delete(@NonNull Disposable disposable) {
+        ObjectHelper.requireNonNull(disposable, "disposable is null");
+        if (disposed) {
+            return false;
+        }
+        synchronized (this) {
+            if (disposed) {
+                return false;
+            }
+
+            OpenHashSet<Disposable> set = resources;
+            if (set == null || !set.remove(disposable)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Atomically clears the container, then disposes all the previously contained {@link Disposable}s.
+     */
+    public void clear() {
+        if (disposed) {
+            return;
+        }
+        OpenHashSet<Disposable> set;
+        synchronized (this) {
+            if (disposed) {
+                return;
+            }
+
+            set = resources;
+            resources = null;
+        }
+
+        dispose(set);
+    }
+
+    /**
+     * Returns the number of currently held {@link Disposable}s.
+     *
+     * @return the number of currently held {@code Disposable}s
+     */
+    public int size() {
+        if (disposed) {
+            return 0;
+        }
+        synchronized (this) {
+            if (disposed) {
+                return 0;
+            }
+            OpenHashSet<Disposable> set = resources;
+            return set != null ? set.size() : 0;
+        }
+    }
+
+    /**
+     * Dispose the contents of the {@link OpenHashSet} by suppressing non-fatal
+     * {@link Throwable}s till the end.
+     *
+     * @param set the {@code OpenHashSet} to dispose elements of
+     */
+    void dispose(@Nullable OpenHashSet<Disposable> set) {
+        if (set == null) {
+            return;
+        }
+        List<Throwable> errors = null;
+        Object[] array = set.keys();
+        for (Object o : array) {
+            if (o instanceof Disposable) {
+                try {
+                    ((Disposable) o).dispose();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    if (errors == null) {
+                        errors = new ArrayList<>();
+                    }
+                    errors.add(ex);
+                }
+            }
+        }
+        if (errors != null) {
+            if (errors.size() == 1) {
+                throw ExceptionHelper.wrapOrThrow(errors.get(0));
+            }
+            throw new CompositeException(errors);
+        }
+    }
+
+    /**
+     * Atomically clears the container, then disposes all the previously contained {@link Disposable}s.
+     *
+     * @see DisposeBag#clear()
+     */
+    public void release() {
         clear();
     }
 
-    /**
-     * When this object is being recycling, disposes all disposables.
-     *
-     * @throws Throwable any exceptions from {@link Object#finalize()}
-     */
     @Override
     protected void finalize() throws Throwable {
-        release();
+        dispose();
         super.finalize();
     }
 }
