@@ -16,13 +16,13 @@
 
 package top.srsea.lever.ui;
 
-import android.os.Handler;
 import android.os.Looper;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
 
 import top.srsea.lever.Lever;
+import top.srsea.lever.concurrent.Dispatchers;
 
 /**
  * A builder for {@link Toast}.
@@ -177,7 +177,7 @@ public class ToastBuilder {
      */
     private void show() {
         if (Looper.getMainLooper().getThread() != Thread.currentThread()) {
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
+            Dispatchers.main().dispatch(new Runnable() {
                 @Override
                 public void run() {
                     build().show();
