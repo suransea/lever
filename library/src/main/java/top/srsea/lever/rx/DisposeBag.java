@@ -16,11 +16,15 @@
 
 package top.srsea.lever.rx;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
+import androidx.lifecycle.LifecycleOwner;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.annotations.NonNull;
-import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.exceptions.Exceptions;
@@ -30,51 +34,18 @@ import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.internal.util.OpenHashSet;
 
 
-/**
- * A disposable container that can hold onto multiple other {@link Disposable}s and
- * offers <em>O(1)</em> time complexity for {@link #add(Disposable)}, {@link #remove(Disposable)} and {@link #delete(Disposable)}
- * operations.
- */
-public final class DisposeBag implements Disposable, DisposableContainer {
+public final class DisposeBag implements Disposable, DisposableContainer, LifecycleEventObserver {
 
-    OpenHashSet<Disposable> resources;
+    private OpenHashSet<Disposable> resources;
 
-    volatile boolean disposed;
+    private volatile boolean disposed;
 
-    /**
-     * Creates an empty {@code DisposeBag}.
-     */
-    public DisposeBag() {
+    public DisposeBag(@NonNull LifecycleOwner lifecycleOwner) {
+        this(lifecycleOwner.getLifecycle());
     }
 
-    /**
-     * Creates a {@code DisposeBag} with the given array of initial {@link Disposable} elements.
-     *
-     * @param disposables the array of {@code Disposable}s to start with
-     * @throws NullPointerException if {@code disposables} or any of its array items is {@code null}
-     */
-    public DisposeBag(@NonNull Disposable... disposables) {
-        ObjectHelper.requireNonNull(disposables, "disposables is null");
-        this.resources = new OpenHashSet<>(disposables.length + 1);
-        for (Disposable d : disposables) {
-            ObjectHelper.requireNonNull(d, "A Disposable in the disposables array is null");
-            this.resources.add(d);
-        }
-    }
-
-    /**
-     * Creates a {@code DisposeBag} with the given {@link Iterable} sequence of initial {@link Disposable} elements.
-     *
-     * @param disposables the {@code Iterable} sequence of {@code Disposable} to start with
-     * @throws NullPointerException if {@code disposables} or any of its items is {@code null}
-     */
-    public DisposeBag(@NonNull Iterable<? extends Disposable> disposables) {
-        ObjectHelper.requireNonNull(disposables, "disposables is null");
-        this.resources = new OpenHashSet<>();
-        for (Disposable d : disposables) {
-            ObjectHelper.requireNonNull(d, "A Disposable item in the disposables sequence is null");
-            this.resources.add(d);
-        }
+    public DisposeBag(@NonNull Lifecycle lifecycle) {
+        lifecycle.addObserver(this);
     }
 
     @Override
@@ -275,18 +246,11 @@ public final class DisposeBag implements Disposable, DisposableContainer {
         }
     }
 
-    /**
-     * Atomically clears the container, then disposes all the previously contained {@link Disposable}s.
-     *
-     * @see DisposeBag#clear()
-     */
-    public void release() {
-        clear();
-    }
-
     @Override
-    protected void finalize() throws Throwable {
-        dispose();
-        super.finalize();
+    public void onStateChanged(@NonNull LifecycleOwner lifecycleOwner, @NonNull Lifecycle.Event event) {
+        if (event.getTargetState() == Lifecycle.State.DESTROYED) {
+            lifecycleOwner.getLifecycle().removeObserver(this);
+            dispose();
+        }
     }
 }
